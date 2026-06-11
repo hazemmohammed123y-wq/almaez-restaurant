@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منيو مطعم الخديوي 👑</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: white; margin: 0; padding: 20px; padding-bottom: 120px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #f1c40f; font-size: 32px; }
+        .menu-container { max-width: 650px; margin: 0 auto; }
+        
+        .category-title { color: #e67e22; border-bottom: 2px solid #e67e22; padding: 10px 0; margin-top: 30px; font-weight: bold; font-size: 20px; text-align: center; }
+        .menu-item { background: #1a1a1a; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .item-info { display: flex; flex-direction: column; }
+        .item-name { font-size: 17px; font-weight: bold; }
+        .item-price { color: #27ae60; font-weight: bold; margin-top: 4px; font-size: 15px; }
+
+        .quantity-control { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: none; background: #e67e22; color: white; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .qty-input { width: 45px; height: 35px; text-align: center; background: #262626; border: 1px solid #444; color: white; border-radius: 8px; font-size: 16px; }
+
+        .footer-btn-container { position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; padding: 15px; text-align: center; border-top: 2px solid #e67e22; }
+        .btn-submit { background: #f1c40f; color: black; border: none; padding: 15px 50px; border-radius: 30px; font-size: 18px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header"><h1>👑 منيو مطعم الخديوي 👑</h1></div>
+
+    <div class="menu-container" id="menu">
+        <div class="category-title">🔥 مشويات</div>
+        <div class="menu-item" data-name="كفتة مشوية" data-price="140"><div class="item-info"><span class="item-name">كفتة مشوية</span><span class="item-price">140 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="شيش طاووق" data-price="150"><div class="item-info"><span class="item-name">شيش طاووق</span><span class="item-price">150 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="ريش ضاني" data-price="220"><div class="item-info"><span class="item-name">ريش ضاني</span><span class="item-price">220 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        
+        <div class="category-title">🌯 شاورما</div>
+        <div class="menu-item" data-name="شاورما فراخ" data-price="65"><div class="item-info"><span class="item-name">شاورما فراخ</span><span class="item-price">65 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="شاورما لحمة" data-price="75"><div class="item-info"><span class="item-name">شاورما لحمة</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        
+        <div class="category-title">🥞 كريب</div>
+        <div class="menu-item" data-name="كريب فراخ" data-price="70"><div class="item-info"><span class="item-name">كريب فراخ</span><span class="item-price">70 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب لحمة" data-price="75"><div class="item-info"><span class="item-name">كريب لحمة</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        
+        <div class="category-title">🍕 بيتزا</div>
+        <div class="menu-item" data-name="بيتزا مارغريتا" data-price="120"><div class="item-info"><span class="item-name">بيتزا مارغريتا</span><span class="item-price">120 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="بيتزا فراخ" data-price="150"><div class="item-info"><span class="item-name">بيتزا فراخ</span><span class="item-price">150 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+    </div>
+
+    <div class="footer-btn-container">
+        <button class="btn-submit" onclick="goToCheckout()">تجهيز الطلب 📋</button>
+    </div>
+
+    <script>
+        function updateQty(btn, delta) {
+            const input = btn.parentElement.querySelector('.qty-input');
+            let val = parseInt(input.value) + delta;
+            input.value = val < 0 ? 0 : val;
+        }
+
+        function goToCheckout() {
+            let selectedItems = [];
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const qty = parseInt(item.querySelector('.qty-input').value);
+                if (qty > 0) {
+                    selectedItems.push({
+                        name: item.getAttribute('data-name'),
+                        price: item.getAttribute('data-price'),
+                        quantity: qty
+                    });
+                }
+            });
+
+            if (selectedItems.length === 0) {
+                alert('😉 يا ريس، اختار أكلة واحدة على الأقل عشان نكمل!');
+                return;
+            }
+            localStorage.setItem('cart', JSON.stringify(selectedItems));
+            window.location.href = 'checkout.html';
+        }
+    </script>
+</body>
+</html>

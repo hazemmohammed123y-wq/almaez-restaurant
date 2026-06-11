@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تأكيد الطلب - مطعم الخديوي</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #fff; margin: 0; padding: 20px; }
+        .checkout-card { background: #1a1a1a; padding: 30px; border-radius: 20px; max-width: 600px; margin: auto; border: 2px solid #e67e22; }
+        h1 { color: #f1c40f; text-align: center; }
+        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #262626; color: white; box-sizing: border-box; font-size: 16px; }
+        select { cursor: pointer; color: #f1c40f; } /* تمييز لون النص داخل الاختيارات */
+        option { background: #1a1a1a; color: white; }
+        .btn-confirm { background: #e67e22; color: white; padding: 15px; border: none; border-radius: 30px; cursor: pointer; width: 100%; font-size: 18px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="checkout-card">
+        <h1>تأكيد الطلب 📋</h1>
+        <div id="order-details">جاري التحميل...</div>
+        <input type="text" id="customer-name" placeholder="الاسم الكامل">
+        <input type="text" id="customer-phone" placeholder="رقم الهاتف">
+        <textarea id="customer-address" placeholder="العنوان بالتفصيل"></textarea>
+        
+        <label style="color: #ddd; display: block; margin-top: 10px;">اختر طريقة الدفع:</label>
+        <select id="payment-method">
+            <option value="كاش عند الاستلام">💵 كاش عند الاستلام</option>
+            <option value="محفظة إلكترونية">📱 محفظة إلكترونية (فودافون كاش / إلخ)</option>
+            <option value="بطاقة بنكية">💳 بطاقة بنكية (فيزا / ماستركارد)</option>
+        </select>
+
+        <button class="btn-confirm" onclick="submitOrder()">إرسال الطلب للمطبخ 🚀</button>
+    </div>
+
+    <script>
+        const socket = io();
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        const detailsDiv = document.getElementById('order-details');
+        detailsDiv.innerHTML = cart.map(i => `<p>${i.name} - العدد: ${i.quantity}</p>`).join('');
+
+        function submitOrder() {
+            const orderData = {
+                name: document.getElementById('customer-name').value,
+                phone: document.getElementById('customer-phone').value,
+                address: document.getElementById('customer-address').value,
+                payment: document.getElementById('payment-method').value, // سحب طريقة الدفع المحددة
+                items: cart, 
+                time: new Date().toLocaleTimeString()
+            };
+
+            if(!orderData.name || !orderData.phone) return alert('أدخل البيانات!');
+            
+            socket.emit('new_order', orderData);
+            alert('تم إرسال الطلب للمطبخ!');
+            localStorage.removeItem('cart');
+            window.location.href = 'clint.html'; 
+        }
+    </script>
+</body>
+</html>
