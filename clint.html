@@ -120,6 +120,7 @@
             line-height: 1.6;
         }
     </style>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
@@ -149,8 +150,12 @@
     </div>
 
     <script>
+        // ربط السوكيت بالسيرفر تلقائياً
+        const socket = io();
+
         function goToMenu() {
-            window.location.href = 'menu.html';
+            // التعديل هنا لضمان فتح صفحة المنيو صح من خلال سيرفر Express على Vercel
+            window.location.href = '/menu.html';
         }
     </script>
 </body>
