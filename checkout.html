@@ -2,59 +2,92 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تأكيد الطلب - مطعم المُعز 👑</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
-        body { font-family: sans-serif; background: #0a0a0c; color: white; padding: 20px; }
-        .checkout-card { background: #1a1a20; padding: 30px; border-radius: 20px; max-width: 500px; margin: auto; border: 2px solid #ff7b00; }
-        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #111; color: white; box-sizing: border-box; }
-        .btn-confirm { background: #ff7b00; padding: 15px; border: none; border-radius: 30px; color: white; width: 100%; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0c; color: #ffffff; margin: 0; padding: 20px; background-image: radial-gradient(circle at center, #16161a 0%, #0a0a0c 100%); }
+        .checkout-card { background: rgba(26, 26, 32, 0.85); padding: 30px; border-radius: 20px; max-width: 600px; margin: 40px auto; border: 2px solid #ff7b00; box-shadow: 0 0 20px rgba(255, 123, 0, 0.2); backdrop-filter: blur(10px); }
+        h1 { color: #f1c40f; text-align: center; margin-top: 0; text-shadow: 0 0 15px rgba(241, 196, 15, 0.3); font-size: 28px; }
+        .order-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #3a3a45; font-size: 16px; }
+        .order-item-name { color: #ffffff; font-weight: bold; }
+        .order-item-qty { color: #a0a0a5; font-size: 14px; }
+        .order-item-price { color: #2ecc71; font-weight: bold; }
+        .total-container { margin-top: 15px; padding: 15px 10px; background: rgba(241, 196, 15, 0.1); border-radius: 10px; border: 1px dashed #f1c40f; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
+        .total-label { color: #f1c40f; }
+        .total-amount { color: #2ecc71; font-size: 20px; }
+        input, textarea, select { width: 100%; padding: 15px; margin: 12px 0; border-radius: 12px; border: 1px solid #3a3a45; background: #111115; color: white; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s; }
+        input:focus, textarea:focus, select:focus { border-color: #ff7b00; outline: none; }
+        select { cursor: pointer; color: #f1c40f; font-weight: bold; }
+        .wallet-alert { display: none; background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 16px; color: #2ecc71; text-align: center; font-weight: bold; }
+        .btn-confirm { background: #ff7b00; color: white; padding: 15px; border: none; border-radius: 30px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 20px; transition: transform 0.2s; }
+        .btn-confirm:hover { transform: scale(1.02); }
     </style>
 </head>
 <body>
     <div class="checkout-card">
         <h1>تأكيد الطلب 📋</h1>
-        <div id="order-details">جاري التحميل...</div>
-        <input type="text" id="customer-name" placeholder="الاسم الكامل">
-        <input type="tel" id="customer-phone" placeholder="رقم الهاتف (11 رقم)">
-        <textarea id="customer-address" placeholder="العنوان"></textarea>
-        <select id="payment-method"><option>كاش عند الاستلام</option><option>محفظة إلكترونية</option></select>
+        <div id="order-details" style="margin-bottom: 25px;">جاري التحميل...</div>
+        <input type="text" id="customer-name" placeholder="الاسم الكامل" required>
+        <input type="tel" id="customer-phone" placeholder="رقم الهاتف (11 رقم)" maxlength="11" required>
+        <textarea id="customer-address" placeholder="العنوان بالتفصيل" rows="3" required></textarea>
+        <label style="color: #a0a0a5; display: block; margin-top: 15px; font-size: 14px;">طريقة الدفع:</label>
+        <select id="payment-method" onchange="toggleWalletInfo()">
+            <option value="كاش عند الاستلام">💵 كاش عند الاستلام</option>
+            <option value="محفظة إلكترونية">📱 محفظة إلكترونية</option>
+            <option value="بطاقة بنكية">💳 بطاقة بنكية</option>
+        </select>
+        <div id="wallet-info" class="wallet-alert">
+            👑 حول المبلغ على الرقم التالي:<br>
+            <span style="color: #ffffff; font-size: 20px; letter-spacing: 1.5px; display: inline-block; margin-top: 8px;">01202363223</span>
+        </div>
         <button class="btn-confirm" onclick="submitOrder()">إرسال الطلب للمطبخ 🚀</button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAaerEGRadJSRkRzL3rIf9aG0mLmVmHQOg",
-            authDomain: "restrant-db79d.firebaseapp.com",
-            projectId: "restrant-db79d",
-            storageBucket: "restrant-db79d.firebasestorage.app",
-            messagingSenderId: "473751126691",
-            appId: "1:473751126691:web:d8ff505a915fdde0a97516"
-        };
-
-        const db = getFirestore(initializeApp(firebaseConfig));
+    <script>
+        // اتصال آمن بالسيرفر
+        const socket = io(); 
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        
-        document.getElementById('order-details').innerHTML = cart.map(i => `<div>${i.name} x ${i.quantity}</div>`).join('');
+        const detailsDiv = document.getElementById('order-details');
 
-        window.submitOrder = async () => {
+        // عرض تفاصيل السلة
+        if (cart.length === 0) {
+            detailsDiv.innerHTML = '<p style="text-align:center; color:#ff4d4d;">السلة فارغة!</p>';
+        } else {
+            let totalOrderPrice = 0;
+            let itemsHTML = cart.map(i => {
+                const itemTotal = parseInt(i.price) * parseInt(i.quantity);
+                totalOrderPrice += itemTotal;
+                return `<div class="order-item-row"><div><span class="order-item-name">${i.name}</span> <span class="order-item-qty">x${i.quantity}</span></div> <span class="order-item-price">${itemTotal} جنيه</span></div>`;
+            }).join('');
+            itemsHTML += `<div class="total-container"><span class="total-label">المجموع:</span> <span class="total-amount">${totalOrderPrice} جنيه</span></div>`;
+            detailsDiv.innerHTML = itemsHTML;
+        }
+
+        function toggleWalletInfo() {
+            document.getElementById('wallet-info').style.display = (document.getElementById('payment-method').value === 'محفظة إلكترونية') ? 'block' : 'none';
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            const payment = document.getElementById('payment-method').value;
+
+            if(!name || !phone || !address) return alert('يرجى ملء جميع البيانات!');
+            if(phone.length !== 11 || isNaN(phone)) return alert('رقم الهاتف يجب أن يكون 11 رقماً.');
+            
             const orderData = {
-                name: document.getElementById('customer-name').value,
-                phone: document.getElementById('customer-phone').value,
-                address: document.getElementById('customer-address').value,
-                payment: document.getElementById('payment-method').value,
+                name, phone, address, payment,
                 items: cart,
-                createdAt: new Date().toISOString()
+                totalPrice: cart.reduce((sum, i) => sum + (parseInt(i.price) * parseInt(i.quantity)), 0),
+                time: new Date().toLocaleTimeString()
             };
 
-            try {
-                await addDoc(collection(db, "orders"), orderData);
-                alert('تم إرسال الطلب بنجاح!');
-                localStorage.removeItem('cart');
-                window.location.href = 'clint.html';
-            } catch (e) { alert('خطأ في الاتصال بالسيرفر'); }
+            socket.emit('new_order', orderData);
+            alert('تم إرسال الطلب بنجاح! سيتم تحضيره قريباً.');
+            localStorage.removeItem('cart');
+            window.location.href = 'clint.html'; 
         }
     </script>
 </body>
