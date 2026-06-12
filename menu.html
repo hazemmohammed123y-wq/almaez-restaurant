@@ -2,48 +2,185 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>منيو مطعم الخديوي 👑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منيو مطعم المُعز 👑</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: white; margin: 0; padding: 20px; padding-bottom: 120px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #f1c40f; font-size: 32px; }
-        .menu-container { max-width: 650px; margin: 0 auto; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #0a0a0c; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 20px; 
+            padding-bottom: 120px;
+            background-image: radial-gradient(circle at center, #16161a 0%, #0a0a0c 100%);
+        }
+        .header { text-align: center; margin-bottom: 40px; margin-top: 10px; }
+        .header h1 { color: #f1c40f; font-size: 34px; text-shadow: 0 0 15px rgba(241, 196, 15, 0.4); margin: 0; }
+        .header p { color: #a0a0a5; font-size: 16px; margin-top: 8px; }
         
-        .category-title { color: #e67e22; border-bottom: 2px solid #e67e22; padding: 10px 0; margin-top: 30px; font-weight: bold; font-size: 20px; text-align: center; }
-        .menu-item { background: #1a1a1a; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .item-info { display: flex; flex-direction: column; }
-        .item-name { font-size: 17px; font-weight: bold; }
-        .item-price { color: #27ae60; font-weight: bold; margin-top: 4px; font-size: 15px; }
+        .menu-container { max-width: 700px; margin: 0 auto; }
+        
+        .category-title { 
+            color: #ff7b00; 
+            border-bottom: 2px solid #ff7b00; 
+            padding: 12px 0; 
+            margin-top: 40px; 
+            font-weight: bold; 
+            font-size: 22px; 
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(255, 123, 0, 0.3);
+        }
+        
+        .menu-item { 
+            background: rgba(26, 26, 32, 0.7); 
+            padding: 18px; 
+            margin-bottom: 12px; 
+            border-radius: 16px; 
+            border: 1px solid #2a2a35; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            transition: transform 0.2s, border-color 0.2s;
+            backdrop-filter: blur(5px);
+        }
+        .menu-item:hover {
+            transform: translateY(-2px);
+            border-color: #ff7b00;
+        }
+        
+        .item-info { display: flex; flex-direction: column; gap: 6px; }
+        .item-name { font-size: 18px; font-weight: bold; color: #ffffff; }
+        .item-price { color: #2ecc71; font-weight: bold; font-size: 16px; }
 
-        .quantity-control { display: flex; align-items: center; gap: 10px; }
-        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: none; background: #e67e22; color: white; cursor: pointer; font-size: 18px; font-weight: bold; }
-        .qty-input { width: 45px; height: 35px; text-align: center; background: #262626; border: 1px solid #444; color: white; border-radius: 8px; font-size: 16px; }
+        .quantity-control { display: flex; align-items: center; gap: 12px; }
+        .qty-btn { 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 50%; 
+            border: none; 
+            background: #ff7b00; 
+            color: white; 
+            cursor: pointer; 
+            font-size: 20px; 
+            font-weight: bold; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 123, 0, 0.2);
+        }
+        .qty-btn:hover { background: #e06c00; }
+        .qty-btn.minus { background: #444450; color: #ccc; box-shadow: none; }
+        .qty-btn.minus:hover { background: #33333d; }
+        
+        .qty-input { 
+            width: 50px; 
+            height: 38px; 
+            text-align: center; 
+            background: #111115; 
+            border: 1px solid #3a3a45; 
+            color: white; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            font-weight: bold;
+        }
 
-        .footer-btn-container { position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; padding: 15px; text-align: center; border-top: 2px solid #e67e22; }
-        .btn-submit { background: #f1c40f; color: black; border: none; padding: 15px 50px; border-radius: 30px; font-size: 18px; cursor: pointer; font-weight: bold; }
+        .footer-btn-container { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(10, 10, 12, 0.9); 
+            padding: 20px; 
+            text-align: center; 
+            border-top: 2px solid #ff7b00; 
+            backdrop-filter: blur(10px);
+        }
+        .btn-submit { 
+            background: #f1c40f; 
+            color: #000000; 
+            border: none; 
+            padding: 15px 60px; 
+            border-radius: 30px; 
+            font-size: 20px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            box-shadow: 0 6px 20px rgba(241, 196, 15, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn-submit:hover {
+            transform: scale(1.05);
+            background: #f39c12;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header"><h1>👑 منيو مطعم الخديوي 👑</h1></div>
+    <div class="header">
+        <h1>👑 منيو مطعم المُعز 👑</h1>
+        <p>جودة من الأرض... طعم من الفضاء 🚀</p>
+    </div>
 
     <div class="menu-container" id="menu">
-        <div class="category-title">🔥 مشويات</div>
-        <div class="menu-item" data-name="كفتة مشوية" data-price="140"><div class="item-info"><span class="item-name">كفتة مشوية</span><span class="item-price">140 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="شيش طاووق" data-price="150"><div class="item-info"><span class="item-name">شيش طاووق</span><span class="item-price">150 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="ريش ضاني" data-price="220"><div class="item-info"><span class="item-name">ريش ضاني</span><span class="item-price">220 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
         
-        <div class="category-title">🌯 شاورما</div>
-        <div class="menu-item" data-name="شاورما فراخ" data-price="65"><div class="item-info"><span class="item-name">شاورما فراخ</span><span class="item-price">65 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="شاورما لحمة" data-price="75"><div class="item-info"><span class="item-name">شاورما لحمة</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        
-        <div class="category-title">🥞 كريب</div>
-        <div class="menu-item" data-name="كريب فراخ" data-price="70"><div class="item-info"><span class="item-name">كريب فراخ</span><span class="item-price">70 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="كريب لحمة" data-price="75"><div class="item-info"><span class="item-name">كريب لحمة</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        
-        <div class="category-title">🍕 بيتزا</div>
-        <div class="menu-item" data-name="بيتزا مارغريتا" data-price="120"><div class="item-info"><span class="item-name">بيتزا مارغريتا</span><span class="item-price">120 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="بيتزا فراخ" data-price="150"><div class="item-info"><span class="item-name">بيتزا فراخ</span><span class="item-price">150 جنيه</span></div><div class="quantity-control"><button class="qty-btn" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="category-title">🍗 قسم البروست</div>
+        <div class="menu-item" data-name="2 قطعة بروست" data-price="105"><div class="item-info"><span class="item-name">2 قطعة بروست</span><span class="item-price">105 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="3 قطعة بروست" data-price="150"><div class="item-info"><span class="item-name">3 قطعة بروست</span><span class="item-price">150 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="4 قطعة بروست" data-price="210"><div class="item-info"><span class="item-name">4 قطعة بروست</span><span class="item-price">210 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+
+        <div class="category-title">🍽️ قسم الوجبات</div>
+        <div class="menu-item" data-name="وجبة كرسبي" data-price="75"><div class="item-info"><span class="item-name">وجبة كرسبي</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة ستربس" data-price="75"><div class="item-info"><span class="item-name">وجبة ستربس</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة فاهيتا" data-price="75"><div class="item-info"><span class="item-name">وجبة فاهيتا</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة زنجر" data-price="75"><div class="item-info"><span class="item-name">وجبة زنجر</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة بانية" data-price="75"><div class="item-info"><span class="item-name">وجبة بانية</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة كبدة" data-price="75"><div class="item-info"><span class="item-name">وجبة كبدة</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="إضافة جبنة موزاريلا للوجبة" data-price="10"><div class="item-info"><span class="item-name">إضافة جبنة موزاريلا للوجبة</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+
+        <div class="category-title">🚀 قسم الكريب</div>
+        <div class="menu-item" data-name="كريب بطاطس" data-price="30"><div class="item-info"><span class="item-name">كريب بطاطس</span><span class="item-price">30 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب برجر" data-price="50"><div class="item-info"><span class="item-name">كريب برجر</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب كفتة" data-price="50"><div class="item-info"><span class="item-name">كريب كفتة</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب بانية" data-price="50"><div class="item-info"><span class="item-name">كريب بانية</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب زنجر" data-price="50"><div class="item-info"><span class="item-name">كريب زنجر</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب كبدة" data-price="70"><div class="item-info"><span class="item-name">كريب كبدة</span><span class="item-price">70 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب شاورما" data-price="70"><div class="item-info"><span class="item-name">كريب شاورما</span><span class="item-price">70 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب ستربس" data-price="70"><div class="item-info"><span class="item-name">كريب ستربس</span><span class="item-price">70 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب ميكس فراخ" data-price="85"><div class="item-info"><span class="item-name">كريب ميكس فراخ</span><span class="item-price">85 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="كريب كونو" data-price="100"><div class="item-info"><span class="item-name">كريب كونو</span><span class="item-price">100 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="إضافة جبنة موزاريلا للكريب" data-price="10"><div class="item-info"><span class="item-name">إضافة جبنة موزاريلا للكريب</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+
+        <div class="category-title">🌯 قسم الشاورما السوري</div>
+        <div class="menu-item" data-name="شاورما فراخ" data-price="50"><div class="item-info"><span class="item-name">شاورما فراخ</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="شاورما موزاريلا" data-price="55"><div class="item-info"><span class="item-name">شاورما موزاريلا</span><span class="item-price">55 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة شاورما عربي" data-price="75"><div class="item-info"><span class="item-name">وجبة شاورما عربي</span><span class="item-price">75 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="وجبة أكسترا" data-price="95"><div class="item-info"><span class="item-name">وجبة أكسترا</span><span class="item-price">95 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="ربع كيلو شاورما + مقبلات" data-price="125"><div class="item-info"><span class="item-name">ربع كيلو شاورما + مقبلات</span><span class="item-price">125 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="بوكس شاورما 24 قطعه + مقبلات" data-price="200"><div class="item-info"><span class="item-name">بوكس شاورما 24 قطعه + مقبلات</span><span class="item-price">200 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="بوكس شاورما 30 قطعه + مقبلات" data-price="230"><div class="item-info"><span class="item-name">بوكس شاورما 30 قطعه + مقبلات</span><span class="item-price">230 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="فتة شاورما" data-price="95"><div class="item-info"><span class="item-name">فتة شاورما</span><span class="item-price">95 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+
+        <div class="category-title">🥖 قسم السوري</div>
+        <div class="menu-item" data-name="سندوتش بطاطس" data-price="15"><div class="item-info"><span class="item-name">سندوتش بطاطس</span><span class="item-price">15 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش نوتيلا" data-price="15"><div class="item-info"><span class="item-name">سندوتش نوتيلا</span><span class="item-price">15 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش بطاطس موزاريلا" data-price="20"><div class="item-info"><span class="item-name">سندوتش بطاطس موزاريلا</span><span class="item-price">20 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش كفتة" data-price="25"><div class="item-info"><span class="item-name">سندوتش كفتة</span><span class="item-price">25 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش برجر" data-price="25"><div class="item-info"><span class="item-name">سندوتش برجر</span><span class="item-price">25 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش كبدة" data-price="25"><div class="item-info"><span class="item-name">سندوتش كبدة</span><span class="item-price">25 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش بانية" data-price="25"><div class="item-info"><span class="item-name">سندوتش بانية</span><span class="item-price">25 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش زنجر" data-price="50"><div class="item-info"><span class="item-name">سندوتش زنجر</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش كرسبي" data-price="55"><div class="item-info"><span class="item-name">سندوتش كرسبي</span><span class="item-price">55 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="سندوتش ستربس" data-price="55"><div class="item-info"><span class="item-name">سندوتش ستربس</span><span class="item-price">55 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+
+        <div class="category-title">🍟 المقبلات</div>
+        <div class="menu-item" data-name="علبة تومية" data-price="10"><div class="item-info"><span class="item-name">علبة تومية</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="علبة كاتشب" data-price="10"><div class="item-info"><span class="item-name">علبة كاتشب</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="طبق بطاطس" data-price="10"><div class="item-info"><span class="item-name">طبق بطاطس</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+        <div class="menu-item" data-name="طبق أرز" data-price="20"><div class="item-info"><span class="item-name">طبق أرز</span><span class="item-price">20 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
+
     </div>
 
     <div class="footer-btn-container">

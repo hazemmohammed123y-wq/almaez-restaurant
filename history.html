@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>سجل المعاملات السابقة</title>
+    <style>
+        body { background: #1a1a1a; color: white; padding: 20px; font-family: sans-serif; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #3498db; }
+        .order-card { background: #262626; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-right: 5px solid #27ae60; }
+        .time-badge { color: #27ae60; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <a href="kitchen.html" class="back-btn">⬅ العودة لشاشة المطبخ</a>
+    <h1>المعاملات السابقة 📂</h1>
+    <div id="history-list"></div>
+
+    <script>
+        const history = JSON.parse(localStorage.getItem('restaurant_history') || '[]');
+        const list = document.getElementById('history-list');
+
+        if (history.length === 0) {
+            list.innerHTML = '<p>لا توجد طلبات سابقة.</p>';
+        } else {
+            history.reverse().forEach(order => {
+                const div = document.createElement('div');
+                div.className = 'order-card';
+                div.innerHTML = `
+                    <h3>طلب من: ${order.name} <span class="time-badge">(وقت الانتهاء: ${order.finishTime})</span></h3>
+                    <p>العنوان: ${order.address} | الهاتف: ${order.phone}</p>
+                    <ul>${order.items.map(i => `<li>${i.name} - الكمية: ${i.quantity}</li>`).join('')}</ul>
+                    <div style="color: #f1c40f;">طريقة الدفع: ${order.payment}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
