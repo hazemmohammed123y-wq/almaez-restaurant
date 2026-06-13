@@ -6,24 +6,21 @@
     <title>مطعم المُعز 👑</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
-        /* إعدادات الصفحة العامة والخلفية الفضائية الكونية */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #020208 url('https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=1920') no-repeat center center fixed;
+            /* دمج صورة الخلفية الكونية */
+            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1000') no-repeat center center fixed;
             background-size: cover;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-            position: relative;
+            overflow: hidden;
         }
-
-        /* طبقة ضبابية داكنة لإبراز المحتوى */
         .overlay { 
-            background: linear-gradient(135deg, rgba(5, 5, 15, 0.85) 0%, rgba(15, 10, 5, 0.75) 100%); 
+            background: rgba(5, 5, 10, 0.7); 
             width: 100%; 
             height: 100%; 
             position: absolute; 
@@ -31,190 +28,105 @@
             left: 0; 
             z-index: 1; 
         }
-
-        /* الكواكب والعناصر الديكورية المحيطة بالكون */
-        .planet-jupiter {
-            position: absolute;
-            top: 5%;
-            right: 5%;
-            width: 150px;
-            height: 150px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg') no-repeat center center;
-            background-size: cover;
-            border-radius: 50%;
-            box-shadow: inset -20px -20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(218, 145, 0, 0.2);
-            z-index: 1;
-            opacity: 0.8;
-        }
-
-        .planet-earth {
-            position: absolute;
-            top: 10%;
-            left: 8%;
-            width: 90px;
-            height: 90px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg') no-repeat center center;
-            background-size: cover;
-            border-radius: 50%;
-            box-shadow: inset -10px -10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(0, 150, 255, 0.2);
-            z-index: 1;
-            opacity: 0.75;
-        }
-
-        /* رائد الفضاء الطائر */
-        .astronaut {
-            position: absolute;
-            bottom: 15%;
-            left: 5%;
-            width: 120px;
-            animation: floatAstronaut 6s ease-in-out infinite;
-            z-index: 2;
-        }
-
-        /* المطعم السوري الصغير على السطح */
-        .syrian-restaurant {
-            position: absolute;
-            bottom: 5%;
-            right: 4%;
-            width: 180px;
-            z-index: 2;
-            filter: drop-shadow(0 0 15px rgba(255,123,0,0.3));
-        }
-
-        /* الكلية الحاضنة للمحتوى (اللوحة المضيئة) */
         .container { 
             position: relative; 
-            z-index: 3; 
+            z-index: 2; 
             color: white; 
             text-align: center; 
-            max-width: 480px; 
+            max-width: 450px; 
             width: 90%; 
-            padding: 35px 25px; 
-            background: rgba(10, 10, 15, 0.75); 
-            border: 2.5px solid #ff7b00; 
-            border-radius: 30px; 
-            box-shadow: 0 0 35px rgba(255, 123, 0, 0.4), inset 0 0 20px rgba(255, 123, 0, 0.1); 
+            padding: 40px 30px; 
+            /* خلفية داكنة مدمجة مع تأثير الـ Blur */
+            background: rgba(15, 12, 25, 0.75); 
+            /* حدود مضيئة برتقالية تحاكي التصميم الأصلي */
+            border: 2px solid #ffaa00; 
+            border-radius: 25px; 
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.4), inset 0 0 15px rgba(255, 170, 0, 0.2); 
             backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px);
             box-sizing: border-box; 
-            margin: 20px auto;
+            margin: 15px; 
         }
-
-        /* أيقونة اللهب العلوي */
-        .fire-icon {
-            font-size: 35px;
-            margin-bottom: -5px;
-            animation: pulseFire 1.5s infinite alternate;
+        h1 { 
+            font-size: 35px; 
+            margin: 0 0 5px 0; 
+            color: #ffaa00; 
+            animation: float 3s ease-in-out infinite;
         }
-
-        h1 { font-size: 44px; margin: 0 0 5px 0; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
-        .subtitle { font-size: 36px; font-weight: 900; color: #ffcc00; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255, 204, 0, 0.5); }
-        .tagline { font-size: 16px; color: #ffffff; font-weight: 500; margin-bottom: 25px; opacity: 0.9; }
-
-        /* أزرار التصنيفات والوجبات الدائرية المضيئة */
-        .menu-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 25px; }
-        .tag { 
-            background: rgba(255, 123, 0, 0.05); 
-            border: 1.5px solid #ff7b00; 
+        .subtitle { 
+            font-size: 40px; 
+            font-weight: 900; 
+            color: #ffcc00; 
+            margin-bottom: 5px; 
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.6); 
+        }
+        .tagline { 
+            font-size: 16px; 
             color: #ffffff; 
+            font-weight: normal; 
+            margin-bottom: 30px; 
+            letter-spacing: 0.5px; 
+        }
+        .menu-tags { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+            margin-bottom: 35px; 
+        }
+        /* تصميم التاجز لتبدو مثل الصندوق المضيء في التصميم */
+        .tag { 
+            background: rgba(20, 15, 10, 0.8); 
+            border: 1px solid #ffaa00; 
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.3);
+            color: #ffcc00; 
             padding: 6px 14px; 
-            border-radius: 15px; 
+            border-radius: 10px; 
             font-size: 14px; 
             font-weight: bold; 
-            box-shadow: 0 0 10px rgba(255, 123, 0, 0.15);
         }
-
-        /* صاروخ الشاورما الطائر المصمم بدلاً من المساحة الفارغة */
-        .shawarma-rocket-container {
-            margin: 20px 0;
-            position: relative;
-            height: 160px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .buttons-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-top: 20px; 
         }
-
-        .shawarma-rocket {
-            width: 110px;
-            animation: floatRocket 4s ease-in-out infinite;
-            filter: drop-shadow(0 10px 15px rgba(255, 123, 0, 0.5));
-        }
-
-        /* حاوية الأزرار */
-        .buttons-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        
         .btn { 
             border: none; 
             padding: 16px 25px; 
-            font-size: 20px; 
+            font-size: 18px; 
             font-weight: bold; 
-            border-radius: 35px; 
+            border-radius: 30px; 
             cursor: pointer; 
-            transition: all 0.3s ease; 
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; 
             width: 100%; 
             box-sizing: border-box; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
         }
-        
-        /* زر الطلب السريع باللون البرتقالي الناري المتوهج */
+        .btn:hover { 
+            transform: scale(1.03); 
+        }
         .btn-yellow { 
-            background: linear-gradient(90deg, #ff8c00, #ff5500); 
+            background: linear-gradient(135deg, #ffaa00, #ff7b00);
             color: white; 
-            box-shadow: 0 4px 20px rgba(255, 85, 0, 0.4); 
+            box-shadow: 0 4px 20px rgba(255, 123, 0, 0.4); 
         }
-        
         .btn-yellow:hover { 
-            background: linear-gradient(90deg, #ff5500, #ff2200); 
-            box-shadow: 0 6px 25px rgba(255, 51, 0, 0.7);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #ff7b00, #e06c00);
+            box-shadow: 0 6px 25px rgba(255, 123, 0, 0.6); 
         }
-
-        /* أسفل الكرت - الفرع وبيانات الاتصال */
         .footer-branch { 
             margin-top: 25px; 
-            border-top: 1px dashed rgba(255, 123, 0, 0.3); 
+            border-top: 1px dashed rgba(255, 170, 0, 0.3); 
             padding-top: 15px; 
             font-size: 13px; 
             color: #e0e0e5; 
-            line-height: 1.7; 
+            line-height: 1.6; 
         }
-
-        .phone-number {
-            color: #2ecc71; 
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
-            white-space: nowrap;
-        }
-
-        /* تأثيرات الحركة والأنيميشن التفاعلية */
-        @keyframes floatRocket {
-            0% { transform: translateY(0px) rotate(5deg); }
-            50% { transform: translateY(-12px) rotate(-5deg); }
-            100% { transform: translateY(0px) rotate(5deg); }
-        }
-
-        @keyframes floatAstronaut {
-            0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) translateX(10px) rotate(8deg); }
-            100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-        }
-
-        @keyframes pulseFire {
-            0% { transform: scale(1); filter: drop-shadow(0 0 2px #ff5500); }
-            100% { transform: scale(1.15); filter: drop-shadow(0 0 12px #ff8c00); }
-        }
-
-        /* إخفاء الديكورات الجانبية على الشاشات الصغيرة لمنع التداخل */
-        @media (max-width: 768px) {
-            .planet-jupiter, .planet-earth, .astronaut, .syrian-restaurant {
-                display: none;
-            }
-            body {
-                background-attachment: scroll;
-            }
+        
+        /* تأثير حركة خفيفة للتاج العلوي لمنحه طابع الفضاء */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
@@ -222,76 +134,37 @@
 
     <div class="overlay"></div>
 
-    <div class="planet-jupiter"></div>
-    <div class="planet-earth"></div>
-    
-    <svg class="astronaut" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 4C20 4 16 12 16 22V36C16 42 20 46 26 48V56L32 60L38 56V48C44 46 48 42 48 36V22C48 12 44 4 32 4Z" fill="#E2E8F0"/>
-        <path d="M22 20C22 16 25 14 32 14C39 14 42 16 42 20V28C42 32 39 34 32 34C25 34 22 32 22 28V20Z" fill="#1A202C" stroke="#4A5568" stroke-width="2"/>
-        <circle cx="28" cy="22" r="2" fill="#fff" opacity="0.7"/>
-        <path d="M16 26C12 26 10 30 10 34C10 38 12 40 16 38" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
-        <path d="M48 26C52 26 54 30 54 34C54 38 52 40 48 38" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-
-    <svg class="syrian-restaurant" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-        <rect x="15" y="35" width="70" height="40" fill="#2D3748" rx="5"/>
-        <rect x="10" y="25" width="80" height="12" fill="#DD6B20" rx="3"/>
-        <text x="50" y="33" fill="white" font-size="7" font-weight="bold" text-anchor="middle" font-family="sans-serif">مطعم سوري</text>
-        <rect x="25" y="50" width="15" height="25" fill="#ED8936"/>
-        <rect x="55" y="50" width="20" height="15" fill="#E2E8F0"/>
-        <rect x="75" y="5" width="18" height="10" fill="#E53E3E"/>
-        <rect x="75" y="15" width="18" height="10" fill="#FFFFFF"/>
-        <rect x="75" y="25" width="18" height="10" fill="#1A202C"/>
-        <line x1="75" y1="5" x2="75" y2="45" stroke="#718096" stroke-width="2"/>
-    </svg>
-
     <div class="container">
-        <div class="fire-icon">🔥</div>
+        <h1>🔥</h1>
         <div class="subtitle">مطعم المُعز</div>
-        <div class="tagline">طعم من كوكب تاني 🚀</div>
+        <div class="tagline">← طعم من كوكب تاني 🚀 →</div>
 
         <div class="menu-tags">
-            <span class="tag">شاورما 🌯</span>
-            <span class="tag">كريب 🥞</span>
-            <span class="tag">وجبات 🍗</span>
-            <span class="tag">بروست 🍟</span>
-            <span class="tag">مقبلات 🧄</span>
-        </div>
-
-        <div class="shawarma-rocket-container">
-            <svg class="shawarma-rocket" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 70 Q50 95 45 100 Q55 95 50 70" fill="#FF3300" />
-                <path d="M45 70 Q50 85 48 90 Q52 85 50 70" fill="#FF9900" />
-                <path d="M35 20 C35 10, 65 10, 65 20 L55 75 C55 75, 45 75, 45 75 Z" fill="#EDC9AF" stroke="#C6A07A" stroke-width="2"/>
-                <path d="M40 30 Q50 25 60 35" stroke="#B38257" stroke-width="2" fill="none"/>
-                <path d="M38 45 Q48 40 56 50" stroke="#B38257" stroke-width="2" fill="none"/>
-                <path d="M42 60 Q50 55 54 63" stroke="#B38257" stroke-width="2" fill="none"/>
-                <path d="M36 20 C38 12, 48 8, 50 15 C52 8, 62 12, 64 20 Z" fill="#693B16"/>
-                <circle cx="44" cy="14" r="3" fill="#2F855A"/>
-                <circle cx="54" cy="12" r="2.5" fill="#E53E3E"/>
-                <circle cx="50" cy="17" r="2" fill="#2F855A"/>
-            </svg>
+            <span class="tag">شاورما</span>
+            <span class="tag">كريب</span>
+            <span class="tag">وجبات</span>
+            <span class="tag">بروست</span>
+            <span class="tag">مقبلات</span>
         </div>
 
         <div class="buttons-container">
-            <button class="btn btn-yellow" onclick="goToMenu()">
-                <span>أطلب على السريع</span>
-                <span>🚀</span>
-            </button>
+            <button class="btn btn-yellow" onclick="goToMenu()">أطلب على السريع 🚀</button>
         </div>
 
         <div class="footer-branch">
-            📍 سمسطا - شارع 26 يوليو (بجوار الفنجري للأحذية - أمام شارع الدهشانية)<br>
-            📞 للتوصيل: <span class="phone-number">012 0098 4437</span> | <span class="phone-number">011 0913 9112</span>
+            📍 سمسطا - شارع 26 يوليو <br>(بجوار الفنجري للأحذية - أمام شارع الدهشانية)<br>
+            <div style="margin-top: 8px;">
+                📞 للطلب: <span style="color: #ffaa00; font-weight: bold;">012 0098 4437</span> | <span style="color: #ffaa00; font-weight: bold;">011 0913 9112</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // ربط آمن وسليم عبر السيرفر دون تعديل البورتات
+        // ربط السوكيت الآمن
         const socket = io();
 
         function goToMenu() {
-            // التحويل لصفحة المنيو السريع
+            // التحويل لصفحة المنيو
             window.location.href = '/menu.html';
         }
     </script>
