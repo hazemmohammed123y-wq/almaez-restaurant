@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* دمج صورة الخلفية الكونية */
             background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1000') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
@@ -18,19 +19,115 @@
             align-items: center;
             overflow: hidden;
         }
-        .overlay { background: rgba(5, 5, 10, 0.75); width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        .container { position: relative; z-index: 2; color: white; text-align: center; max-width: 500px; width: 90%; padding: 40px 30px; background: rgba(20, 20, 27, 0.65); border: 2px solid #ff7b00; border-radius: 25px; box-shadow: 0 0 30px rgba(255, 123, 0, 0.25); backdrop-filter: blur(10px); box-sizing: border-box; margin: 15px; }
-        h1 { font-size: 46px; margin: 0 0 5px 0; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
-        .subtitle { font-size: 32px; font-weight: 900; color: #f1c40f; margin-bottom: 10px; text-shadow: 0 0 20px rgba(241, 196, 15, 0.4); }
-        .tagline { font-size: 18px; color: #ff7b00; font-weight: bold; margin-bottom: 25px; letter-spacing: 0.5px; }
-        .menu-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 35px; }
-        .tag { background: rgba(255, 123, 0, 0.1); border: 1px solid rgba(255, 123, 0, 0.4); color: #ffffff; padding: 5px 12px; border-radius: 12px; font-size: 13px; font-weight: bold; }
-        .buttons-container { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-        .btn { border: none; padding: 16px 25px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 100%; box-sizing: border-box; }
-        .btn:hover { transform: scale(1.02); }
-        .btn-yellow { background-color: #ff7b00; color: white; box-shadow: 0 4px 15px rgba(255, 123, 0, 0.3); }
-        .btn-yellow:hover { background-color: #e06c00; box-shadow: 0 6px 20px rgba(255, 123, 0, 0.5); }
-        .footer-branch { margin-top: 25px; border-top: 1px dashed #3a3a45; padding-top: 15px; font-size: 12px; color: #a0a0a5; line-height: 1.6; }
+        .overlay { 
+            background: rgba(5, 5, 10, 0.7); 
+            width: 100%; 
+            height: 100%; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+        }
+        .container { 
+            position: relative; 
+            z-index: 2; 
+            color: white; 
+            text-align: center; 
+            max-width: 450px; 
+            width: 90%; 
+            padding: 40px 30px; 
+            /* خلفية داكنة مدمجة مع تأثير الـ Blur */
+            background: rgba(15, 12, 25, 0.75); 
+            /* حدود مضيئة برتقالية تحاكي التصميم الأصلي */
+            border: 2px solid #ffaa00; 
+            border-radius: 25px; 
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.4), inset 0 0 15px rgba(255, 170, 0, 0.2); 
+            backdrop-filter: blur(12px); 
+            box-sizing: border-box; 
+            margin: 15px; 
+        }
+        h1 { 
+            font-size: 35px; 
+            margin: 0 0 5px 0; 
+            color: #ffaa00; 
+            animation: float 3s ease-in-out infinite;
+        }
+        .subtitle { 
+            font-size: 40px; 
+            font-weight: 900; 
+            color: #ffcc00; 
+            margin-bottom: 5px; 
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.6); 
+        }
+        .tagline { 
+            font-size: 16px; 
+            color: #ffffff; 
+            font-weight: normal; 
+            margin-bottom: 30px; 
+            letter-spacing: 0.5px; 
+        }
+        .menu-tags { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+            margin-bottom: 35px; 
+        }
+        /* تصميم التاجز لتبدو مثل الصندوق المضيء في التصميم */
+        .tag { 
+            background: rgba(20, 15, 10, 0.8); 
+            border: 1px solid #ffaa00; 
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.3);
+            color: #ffcc00; 
+            padding: 6px 14px; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            font-weight: bold; 
+        }
+        .buttons-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-top: 20px; 
+        }
+        .btn { 
+            border: none; 
+            padding: 16px 25px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        .btn:hover { 
+            transform: scale(1.03); 
+        }
+        .btn-yellow { 
+            background: linear-gradient(135deg, #ffaa00, #ff7b00);
+            color: white; 
+            box-shadow: 0 4px 20px rgba(255, 123, 0, 0.4); 
+        }
+        .btn-yellow:hover { 
+            background: linear-gradient(135deg, #ff7b00, #e06c00);
+            box-shadow: 0 6px 25px rgba(255, 123, 0, 0.6); 
+        }
+        .footer-branch { 
+            margin-top: 25px; 
+            border-top: 1px dashed rgba(255, 170, 0, 0.3); 
+            padding-top: 15px; 
+            font-size: 13px; 
+            color: #e0e0e5; 
+            line-height: 1.6; 
+        }
+        
+        /* تأثير حركة خفيفة للتاج العلوي لمنحه طابع الفضاء */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
     </style>
 </head>
 <body>
@@ -38,16 +135,16 @@
     <div class="overlay"></div>
 
     <div class="container">
-        <h1>👑</h1>
+        <h1>🔥</h1>
         <div class="subtitle">مطعم المُعز</div>
-        <div class="tagline">طعم من كوكب تاني 🚀</div>
+        <div class="tagline">← طعم من كوكب تاني 🚀 →</div>
 
         <div class="menu-tags">
-            <span class="tag">شاورما 🌯</span>
-            <span class="tag">كريب 🥞</span>
-            <span class="tag">وجبات 🍗</span>
-            <span class="tag">بروست 🍟</span>
-            <span class="tag">مقبلات 🧄</span>
+            <span class="tag">شاورما</span>
+            <span class="tag">كريب</span>
+            <span class="tag">وجبات</span>
+            <span class="tag">بروست</span>
+            <span class="tag">مقبلات</span>
         </div>
 
         <div class="buttons-container">
@@ -55,13 +152,15 @@
         </div>
 
         <div class="footer-branch">
-            📍 سمسطا - شارع 26 يوليو (بجوار الفنجري للأحذية - أمام شارع الدهشانية)<br>
-            📞 للتوصيل: <span style="color: #2ecc71; font-weight: bold;">012 0098 4437</span> | <span style="color: #2ecc71; font-weight: bold;">011 0913 9112</span>
+            📍 سمسطا - شارع 26 يوليو <br>(بجوار الفنجري للأحذية - أمام شارع الدهشانية)<br>
+            <div style="margin-top: 8px;">
+                📞 للطلب: <span style="color: #ffaa00; font-weight: bold;">012 0098 4437</span> | <span style="color: #ffaa00; font-weight: bold;">011 0913 9112</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // ربط آمن
+        // ربط السوكيت الآمن
         const socket = io();
 
         function goToMenu() {
