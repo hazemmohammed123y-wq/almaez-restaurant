@@ -2,93 +2,87 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مطعم المُعز👑</title>
     <style>
-        body {
-            margin: 0;
-            padding: 20px 0; /* إضافة مسافة أمان علوية وسفلية للموبايل */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            
-            /* استدعاء صورتك الخلفية الحالية */
-            background-image: url('./background.jpg');
-            background-color: #03020c;
-            
-            /* منع تكرار الصورة نهائياً */
-            background-repeat: no-repeat;
-            
-            /* تمركز الصورة في المنتصف تماماً لضمان ظهور العناصر الأساسية */
-            background-position: center center;
-            
-            /* جعل الخلفية ثابتة في مكانها بشكل احترافي أثناء الاسكرول */
-            background-attachment: fixed;
-            
-            /* السر هنا: الصورة تفرش وتغطي كامل الشاشة مهما كان حجم الجهاز */
-            background-size: cover;
-            
-            /* جعل الارتفاع مرن ليناسب الشاشات الطولية كالموبايل */
-            min-height: 100vh;
-            
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        * {
             box-sizing: border-box;
         }
 
-        /* الحاوية السوداء الشفافة بالظبط زي الصورة الأولى */
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            
+            /* ضبط الخلفية لتكون متناسقة وثابتة */
+            background-image: url('./background.jpg');
+            background-color: #03020c;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            
+            /* ملء الشاشة بالظبط وتوسيط الكارت */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* الحاوية السوداء الشفافة */
         .container { 
             position: relative; 
             z-index: 2; 
             color: white; 
             text-align: center; 
-            max-width: 460px; 
-            width: 90%; 
-            padding: 50px 30px; 
-            background: rgba(0, 0, 0, 0.75); /* درجة الشفافية المطلوبة */
-            border: 2px solid #ffcc00; /* الخط الأصفر المضيء الجانبي */
-            border-radius: 35px; /* الانحناء الدائري للحواف */
-            box-shadow: 0 0 35px rgba(255, 204, 0, 0.3); /* توهج أصفر خفيف حول الكارت */
-            box-sizing: border-box; 
-            margin: auto; /* لضمان التوسط في الشاشات الصغيرة جداً */
+            max-width: 450px; 
+            width: 100%; 
+            padding: 40px 25px; 
+            background: rgba(0, 0, 0, 0.78); /* سواد أعمق ليمتزج مع الفضاء */
+            border: 2px solid #ffcc00; 
+            border-radius: 30px; 
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.25); 
+            transition: all 0.3s ease;
         }
 
-        /* شعلة النار اللي فوق الاسم */
+        /* شعلة النار */
         .fire-icon {
-            font-size: 36px;
-            margin-bottom: 8px;
+            font-size: 32px;
+            margin-bottom: 5px;
             animation: pulse 1.5s infinite alternate;
         }
 
         h1 { 
-            font-size: 44px; 
+            font-size: 38px; 
             font-weight: 900; 
-            margin: 0px 0 12px 0; 
-            color: #ffcc00; /* لون أصفر مضيء للاسم */
+            margin: 0px 0 10px 0; 
+            color: #ffcc00; 
             text-shadow: 0 0 15px rgba(255, 204, 0, 0.6); 
         }
 
         p.subtitle { 
-            font-size: 19px; 
+            font-size: 17px; 
             color: #ffffff; 
             font-weight: bold; 
             margin-bottom: 25px; 
         }
 
-        /* أقسام الأكل الدائرية الصغيرة */
+        /* أقسام الأكل */
         .categories {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .cat-item {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #ffcc00;
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 204, 0, 0.7);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: bold;
             color: #ffffff;
         }
@@ -99,18 +93,18 @@
             align-items: center;
         }
 
-        /* زر أطلب على السريع الأصفر البيضاوي */
+        /* زر أطلب على السريع */
         .btn-order { 
             border: none; 
-            padding: 16px 55px; 
-            font-size: 22px; 
+            padding: 14px 45px; 
+            font-size: 20px; 
             font-weight: bold; 
             border-radius: 50px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
             background: #ffcc00;
             color: #000000; 
-            box-shadow: 0 5px 20px rgba(255, 204, 0, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.35);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -118,28 +112,63 @@
 
         .btn-order:hover { 
             background: #ffa600;
-            transform: scale(1.05); 
+            transform: scale(1.03); 
         }
 
-        /* بيانات الاتصال أسفل الكارت */
+        /* بيانات الاتصال */
         .footer-info {
-            margin-top: 35px;
-            font-size: 14px;
+            margin-top: 30px;
+            font-size: 13px;
             color: #e2e2e8;
-            line-height: 1.6;
-            font-weight:500
+            line-height: 1.5;
+            font-weight: 500;
         }
 
         .footer-info span {
             display: block;
-            margin-top: 6px;
+            margin-top: 5px;
         }
 
         @keyframes pulse {
             from { transform: scale(1); }
-            to { transform: scale(1.1); }
+            to { transform: scale(1.08); }
         }
 
+        /* 📱 شاشات الموبايل والتابلت (المقاسات الذكية) */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+                /* قفل الخلفية في الموبايل بالظبط لتظهر العناصر من الأطراف */
+                background-position: center 30%; 
+            }
+            
+            .container {
+                width: 88%; /* الكارت يصغر ويلم نفسه عشان يسيب مساحة للخلفية تظهر حوله */
+                padding: 25px 15px;
+                border-radius: 25px;
+            }
+
+            /* تصغير النصوص عشان تليق مع حجم الموبايل */
+            .fire-icon { font-size: 24px; }
+            h1 { font-size: 26px; }
+            p.subtitle { font-size: 14px; margin-bottom: 20px; }
+            
+            .categories { margin-bottom: 20px; gap: 6px; }
+            .cat-item { font-size: 12px; padding: 5px 10px; }
+            
+            .btn-order { font-size: 16px; padding: 10px 30px; }
+            
+            .footer-info { margin-top: 20px; font-size: 11px; }
+        }
+
+        /* 📟 للشاشات المتوسطة كـ التابلت */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                width: 75%;
+                padding: 35px 20px;
+            }
+            h1 { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
