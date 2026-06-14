@@ -14,7 +14,7 @@
             padding: 10px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             
-            /* ضبط الخلفية لتكون متناسقة وثابتة */
+            /* ضبط الخلفية الأساسية للشاشات الكبيرة */
             background-image: url('./background.jpg');
             background-color: #03020c;
             background-repeat: no-repeat;
@@ -134,18 +134,21 @@
             to { transform: scale(1.08); }
         }
 
-        /* 📱 شاشات الموبايل والتابلت (المقاسات الذكية) */
+        /* 📱 شاشات الموبايل (المقاسات الذكية المحدثة) */
         @media (max-width: 480px) {
             body {
-                padding: 15px;
-                /* قفل الخلفية في الموبايل بالظبط لتظهر العناصر من الأطراف */
-                background-position: center 30%; 
+                padding: 10px;
+                /* إجبار الخلفية على الظهور كاملة بنسبة 100% عرض وارتفاع لمنع القص */
+                background-size: 100% 100%;
+                background-attachment: scroll; /* إلغاء الـ fixed لتفادي مشاكل متصفحات الموبايل */
+                background-position: center center;
             }
             
             .container {
-                width: 88%; /* الكارت يصغر ويلم نفسه عشان يسيب مساحة للخلفية تظهر حوله */
-                padding: 25px 15px;
+                width: 92%; /* الكارت يلم نفسه شوية عشان يسيب مساحة للخلفية تبان من الأطراف */
+                padding: 20px 15px;
                 border-radius: 25px;
+                background: rgba(0, 0, 0, 0.82); /* زيادة التباين لتسهيل القراءة على الموبايل */
             }
 
             /* تصغير النصوص عشان تليق مع حجم الموبايل */
@@ -163,6 +166,10 @@
 
         /* 📟 للشاشات المتوسطة كـ التابلت */
         @media (min-width: 481px) and (max-width: 768px) {
+            body {
+                background-size: 100% 100%;
+                background-attachment: scroll;
+            }
             .container {
                 width: 75%;
                 padding: 35px 20px;
