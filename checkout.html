@@ -45,12 +45,11 @@
     </div>
 
     <script>
-        // اتصال بالسيرفر المحلي عبر الـ Socket
         const socket = io(); 
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const detailsDiv = document.getElementById('order-details');
 
-        // عرض تفاصيل السلة
+        // عرض تفاصيل السلة للزبون قبل ما يبعت
         if (cart.length === 0) {
             detailsDiv.innerHTML = '<p style="text-align:center; color:#ff4d4d;">السلة فارغة!</p>';
         } else {
@@ -76,18 +75,25 @@
 
             if(!name || !phone || !address) return alert('يرجى ملء جميع البيانات!');
             if(phone.length !== 11 || isNaN(phone)) return alert('رقم الهاتف يجب أن يكون 11 رقماً.');
+            if(cart.length === 0) return alert('السلة فارغة، لا يمكن إرسال طلب فارغ!');
             
             const orderData = {
                 name, phone, address, payment,
-                items: cart,
+                items: cart, // الأكل والبيانات هيروحوا كاملين هنا للسيرفر
                 totalPrice: cart.reduce((sum, i) => sum + (parseInt(i.price) * parseInt(i.quantity)), 0),
                 time: new Date().toLocaleTimeString()
             };
 
+            // أولاً: إرسال كل البيانات كاملة بالـ Socket للسيرفر والمطبخ
             socket.emit('new_order', orderData);
+            
             alert('تم إرسال الطلب بنجاح! سيتم تحضيره قريباً.');
+            
+            // ثانياً: مسح السلة فوراً من متصفح الزبون بعد التأكد من إرسالها
             localStorage.removeItem('cart');
-            window.location.href = 'index.html'; // أو رجعها clint.html لو ده اسم الصفحة الحقيقي عندك
+            
+            // ثالثاً: إرجاع الزبون لصفحة الـ index.html الرئيسية وسلته صفر جاهزة من جديد
+            window.location.href = 'index.html'; 
         }
     </script>
 </body>
