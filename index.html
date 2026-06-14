@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مطعم المُعز 👑</title>
+    <title>مطعم المُعز👑</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* خلفية الفضاء وكوكب الأرض الحقيقي متناسقة تماماً مع صفحة الكلاينت */
-            background: #03020c url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1200') no-repeat center center fixed;
+            /* استدعاء صورتك الجديدة اللي حطيتها في الفولدر */
+            background: #03020c url('./background.jpg') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
             display: flex;
@@ -20,145 +20,136 @@
             position: relative;
         }
 
-        /* السديم الكوني الملون (البنفسجي والفيروزي) */
-        .nebula {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 20%, rgba(170, 140, 8, 0.25) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 80%, rgba(160, 124, 6, 0.2) 0%, transparent 50%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* الحاوية الزجاجية البلورية الشفافة */
+        /* الحاوية السوداء الشفافة بالظبط زي الصورة الأولى */
         .container { 
             position: relative; 
             z-index: 2; 
             color: white; 
             text-align: center; 
-            max-width: 430px; 
+            max-width: 460px; 
             width: 90%; 
-            padding: 95px 25px 40px 25px; /* مساحة علوية عشان تأثير الـ 3D للأكل الطاير */
-            background: rgba(10, 11, 26, 0.65); 
-            border: 2px solid rgba(236, 158, 12, 0.6); 
-            border-radius: 30px; 
-            box-shadow: 0 0 40px rgba(202, 111, 6, 0.4), 
-                        0 0 80px rgba(150, 91, 3, 0.2), 
-                        inset 0 0 25px rgba(124, 86, 4, 0.2); 
-            backdrop-filter: blur(20px); 
+            padding: 50px 30px; 
+            background: rgba(0, 0, 0, 0.75); /* درجة الشفافية المطلوبة */
+            border: 2px solid #ffcc00; /* الخط الأصفر المضيء الجانبي */
+            border-radius: 35px; /* الانحناء الدائري للحواف */
+            box-shadow: 0 0 35px rgba(255, 204, 0, 0.3); /* توهج أصفر خفيف حول الكارت */
             box-sizing: border-box; 
-            margin: 20px; 
         }
 
-        /* 🍔 طاقم الأكل الطاير 3D في الأعلى متناسق مع الديزاين الأساسي 🍟 */
-        .space-food-wrapper {
-            position: absolute;
-            top: -110px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 220px;
-            height: 220px;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .burger-fly {
-            position: absolute;
-            width: 145px;
-            left: -5px;
-            top: 5px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6)) drop-shadow(0 0 25px rgba(234, 179, 8, 0.5));
-            animation: float-element 4s ease-in-out infinite alternate;
-        }
-
-        .fries-fly {
-            position: absolute;
-            width: 105px;
-            right: -10px;
-            bottom: 25px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.4));
-            animation: float-element 4.5s ease-in-out infinite alternate-reverse;
-        }
-
-        .cosmic-glow {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            background: radial-gradient(circle, rgba(253, 224, 92, 0.5) 0%, transparent 70%);
-            top: 40px;
-            left: 40px;
-            z-index: -1;
+        /* شعلة النار اللي فوق الاسم */
+        .fire-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+            animation: pulse 1.5s infinite alternate;
         }
 
         h1 { 
-            font-size: 38px; 
+            font-size: 44px; 
             font-weight: 900; 
-            margin: 10px 0 5px 0; 
-            color: #ffffff; 
-            /* تأثير إضاءة النص المتوهج بالبرق والنيون */
-            text-shadow: 0 0 10px #fff, 0 0 20px #ff5e00, 0 0 40px #e27042; 
+            margin: 0px 0 12px 0; 
+            color: #ffcc00; /* لون أصفر مضيء للاسم */
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.6); 
         }
 
-        p { 
-            font-size: 17px; 
-            color: #cbd5e1; 
-            font-weight: normal; 
-            margin-bottom: 35px; 
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        p.subtitle { 
+            font-size: 19px; 
+            color: #ffffff; 
+            font-weight: bold; 
+            margin-bottom: 25px; 
+        }
+
+        /* أقسام الأكل الدائرية الصغيرة */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .cat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ffcc00;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffffff;
         }
 
         .btns { 
             display: flex; 
             flex-direction: column; 
-            margin-top: 15px; 
+            align-items: center;
         }
 
-        /* زر فضائي احترافي متوهج */
-        .btn { 
+        /* زر أطلب على السريع الأصفر البيضاوي */
+        .btn-order { 
             border: none; 
-            padding: 16px 25px; 
-            font-size: 19px; 
+            padding: 16px 55px; 
+            font-size: 22px; 
             font-weight: bold; 
             border-radius: 50px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
-
-        .btn-order { 
-            background: linear-gradient(90deg, #a35206, #e46009);
-            color: white; 
-            box-shadow: 0 0 25px rgba(231, 107, 6, 0.836), 0 0 15px rgba(204, 55, 10, 0.4);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            background: #ffcc00;
+            color: #000000; 
+            box-shadow: 0 5px 20px rgba(255, 204, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-order:hover { 
-            background: linear-gradient(90deg, #dd611a, #a06416);
-            box-shadow: 0 0 35px #d8970a, 0 0 20px #b39a0f; 
-            transform: translateY(-2px) scale(1.02); 
+            background: #ffa600;
+            transform: scale(1.05); 
+        }
+
+        /* بيانات الاتصال أسفل الكارت */
+        .footer-info {
+            margin-top: 35px;
+            font-size: 14px;
+            color: #e2e2e8;
+            line-height: 1.6;
+            font-weight:500
+        }
+
+        .footer-info span {
+            display: block;
+            margin-top: 6px;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="nebula"></div>
-
     <div class="container">
-        <div class="space-food-wrapper">
-            <div class="cosmic-glow"></div>
-            <img src="https://i.ibb.co/680YVfc/burger-png.png" class="burger-fly" alt="برجر">
-            <img src="https://i.ibb.co/3mSgMby/fries-png.png" class="fries-fly" alt="بطاطس">
+        <div class="fire-icon">&#128293;</div>
+        
+        <h1>👑مطعم المُعز👑</h1>
+        <p class="subtitle">🚀 طعم من كوكب تاني 🚀</p>
+
+        <div class="categories">
+            <div class="cat-item">🌯 شاورما</div>
+            <div class="cat-item">🍗 وجبات</div>
+            <div class="cat-item">🥞 كريب</div>
+            <div class="cat-item">🍟 مقبلات</div>
         </div>
 
-        <h1>مطعم المُعز 👑</h1>
-        <p>أفضل الأكلات السورية على الإطلاق 🔥</p>
-
         <div class="btns">
-            <button class="btn btn-order" onclick="window.location.href='menu.html'">أطلب على السريع 🚀</button>
+            <button class="btn-order" onclick="window.location.href='menu.html'">
+                اطلب على السريع 🚀
+            </button>
+        </div>
+
+        <div class="footer-info">
+            <span>📍 - ||سمسطا - شارع 26 يوليو - امام شارع الدهشانيه</span>
+            <span>📞 012 0998 9112</span>
         </div>
     </div>
 

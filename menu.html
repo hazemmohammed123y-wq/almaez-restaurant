@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منيو مطعم المُعز 👑</title>
+    <title>منيو مطعم المُعز👑</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -98,6 +98,7 @@
             text-align: center; 
             border-top: 2px solid #ff7b00; 
             backdrop-filter: blur(10px);
+            z-index: 1000;
         }
         .btn-submit { 
             background: #f1c40f; 
@@ -172,46 +173,46 @@
         <div class="menu-item" data-name="سندوتش كبدة" data-price="25"><div class="item-info"><span class="item-name">سندوتش كبدة</span><span class="item-price">25 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
         <div class="menu-item" data-name="سندوتش بانية" data-price="25"><div class="item-info"><span class="item-name">سندوتش بانية</span><span class="item-price">25 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
         <div class="menu-item" data-name="سندوتش زنجر" data-price="50"><div class="item-info"><span class="item-name">سندوتش زنجر</span><span class="item-price">50 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="سندوتش كرسبي" data-price="55"><div class="item-info"><span class="item-name">سندوتش كرسبي</span><span class="item-price">55 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="سندوتش ستربس" data-price="55"><div class="item-info"><span class="item-name">سندوتش ستربس</span><span class="item-price">55 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-
-        <div class="category-title">🍟 المقبلات</div>
-        <div class="menu-item" data-name="علبة تومية" data-price="10"><div class="item-info"><span class="item-name">علبة تومية</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="علبة كاتشب" data-price="10"><div class="item-info"><span class="item-name">علبة كاتشب</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="طبق بطاطس" data-price="10"><div class="item-info"><span class="item-name">طبق بطاطس</span><span class="item-price">10 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
-        <div class="menu-item" data-name="طبق أرز" data-price="20"><div class="item-info"><span class="item-name">طبق أرز</span><span class="item-price">20 جنيه</span></div><div class="quantity-control"><button class="qty-btn minus" onclick="updateQty(this, -1)">-</button><input type="number" value="0" class="qty-input" readonly><button class="qty-btn" onclick="updateQty(this, 1)">+</button></div></div>
 
     </div>
 
     <div class="footer-btn-container">
-        <button class="btn-submit" onclick="goToCheckout()">تجهيز الطلب 📋</button>
+        <button class="btn-submit" onclick="goToCheckout()">📄 تجهيز الطلب</button>
     </div>
 
     <script>
-        function updateQty(btn, delta) {
-            const input = btn.parentElement.querySelector('.qty-input');
-            let val = parseInt(input.value) + delta;
-            input.value = val < 0 ? 0 : val;
+        // دالة تحديث الكمية داخل الـ Input
+        function updateQty(button, change) {
+            const input = button.parentElement.querySelector('.qty-input');
+            let currentVal = parseInt(input.value) || 0;
+            currentVal += change;
+            if (currentVal < 0) currentVal = 0;
+            input.value = currentVal;
         }
 
+        // دالة تجميع عناصر السلة وحفظها في localStorage ثم الذهاب لصفحة التأكيد
         function goToCheckout() {
-            let selectedItems = [];
-            document.querySelectorAll('.menu-item').forEach(item => {
-                const qty = parseInt(item.querySelector('.qty-input').value);
-                if (qty > 0) {
-                    selectedItems.push({
-                        name: item.getAttribute('data-name'),
-                        price: item.getAttribute('data-price'),
-                        quantity: qty
-                    });
+            const cart = [];
+            const menuItems = document.querySelectorAll('.menu-item');
+
+            menuItems.forEach(item => {
+                const qtyInput = item.querySelector('.qty-input');
+                const quantity = parseInt(qtyInput.value) || 0;
+
+                if (quantity > 0) {
+                    const name = item.getAttribute('data-name');
+                    const price = item.getAttribute('data-price');
+                    cart.push({ name, price, quantity });
                 }
             });
 
-            if (selectedItems.length === 0) {
-                alert('😉 يا ريس، اختار أكلة واحدة على الأقل عشان نكمل!');
+            if (cart.length === 0) {
+                alert('يرجى اختيار وجبة واحدة على الأقل قبل تجهيز الطلب!');
                 return;
             }
-            localStorage.setItem('cart', JSON.stringify(selectedItems));
+
+            // حفظ السلة في localStorage لتستقبلها صفحة checkout.html
+            localStorage.setItem('cart', JSON.stringify(cart));
             window.location.href = 'checkout.html';
         }
     </script>

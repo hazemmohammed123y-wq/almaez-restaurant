@@ -45,7 +45,7 @@
     </div>
 
     <script>
-        // اتصال آمن بالسيرفر
+        // اتصال بالسيرفر المحلي عبر الـ Socket
         const socket = io(); 
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const detailsDiv = document.getElementById('order-details');
@@ -87,7 +87,7 @@
             socket.emit('new_order', orderData);
             alert('تم إرسال الطلب بنجاح! سيتم تحضيره قريباً.');
             localStorage.removeItem('cart');
-            window.location.href = 'clint.html'; 
+            window.location.href = 'client.html'; // أو رجعها clint.html لو ده اسم الصفحة الحقيقي عندك
         }
     </script>
 </body>
