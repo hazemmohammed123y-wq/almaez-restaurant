@@ -7,17 +7,32 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding: 20px 0; /* إضافة مسافة أمان علوية وسفلية للموبايل */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* استدعاء صورتك الجديدة اللي حطيتها في الفولدر */
-            background: #03020c url('./background.jpg') no-repeat center center fixed;
+            
+            /* استدعاء صورتك الخلفية الحالية */
+            background-image: url('./background.jpg');
+            background-color: #03020c;
+            
+            /* منع تكرار الصورة نهائياً */
+            background-repeat: no-repeat;
+            
+            /* تمركز الصورة في المنتصف تماماً لضمان ظهور العناصر الأساسية */
+            background-position: center center;
+            
+            /* جعل الخلفية ثابتة في مكانها بشكل احترافي أثناء الاسكرول */
+            background-attachment: fixed;
+            
+            /* السر هنا: الصورة تفرش وتغطي كامل الشاشة مهما كان حجم الجهاز */
             background-size: cover;
-            height: 100vh;
+            
+            /* جعل الارتفاع مرن ليناسب الشاشات الطولية كالموبايل */
+            min-height: 100vh;
+            
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            position: relative;
+            box-sizing: border-box;
         }
 
         /* الحاوية السوداء الشفافة بالظبط زي الصورة الأولى */
@@ -34,6 +49,7 @@
             border-radius: 35px; /* الانحناء الدائري للحواف */
             box-shadow: 0 0 35px rgba(255, 204, 0, 0.3); /* توهج أصفر خفيف حول الكارت */
             box-sizing: border-box; 
+            margin: auto; /* لضمان التوسط في الشاشات الصغيرة جداً */
         }
 
         /* شعلة النار اللي فوق الاسم */
