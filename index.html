@@ -16,7 +16,7 @@
             
             /* ضبط الخلفية الأساسية للشاشات الكبيرة */
             background-image: url('./background.jpg');
-            background-color: #03020c;
+            background-color: #03020c; /* درجة السواد الافتراضية الممتزجة مع الفضاء */
             background-repeat: no-repeat;
             background-position: center center;
             background-attachment: fixed;
@@ -39,7 +39,7 @@
             max-width: 450px; 
             width: 100%; 
             padding: 40px 25px; 
-            background: rgba(0, 0, 0, 0.78); /* سواد أعمق ليمتزج مع الفضاء */
+            background: rgba(0, 0, 0, 0.75); /* شفافية متناسقة */
             border: 2px solid #ffcc00; 
             border-radius: 30px; 
             box-shadow: 0 0 30px rgba(255, 204, 0, 0.25); 
@@ -134,47 +134,49 @@
             to { transform: scale(1.08); }
         }
 
-        /* 📱 شاشات الموبايل (المقاسات الذكية المحدثة) */
+        /* 📱 شاشات الموبايل (المقاسات الموزونة لحماية الصورة) */
         @media (max-width: 480px) {
             body {
                 padding: 10px;
-                /* إجبار الخلفية على الظهور كاملة بنسبة 100% عرض وارتفاع لمنع القص */
-                background-size: 100% 100%;
-                background-attachment: scroll; /* إلغاء الـ fixed لتفادي مشاكل متصفحات الموبايل */
+                /* contain تحافظ على أبعاد الصورة الأصلية تماماً بدون أي ضغط أو مط */
+                background-size: contain; 
+                background-attachment: scroll;
                 background-position: center center;
+                /* تكرار اللون الأسود في المساحات الفاضية فوق وتحت بسلاسة */
+                background-color: #03020c; 
             }
             
             .container {
-                width: 92%; /* الكارت يلم نفسه شوية عشان يسيب مساحة للخلفية تبان من الأطراف */
-                padding: 20px 15px;
+                width: 90%; 
+                padding: 22px 15px; /* تقليل الحشو الداخلي عشان الكارت يلم نفسه */
                 border-radius: 25px;
-                background: rgba(0, 0, 0, 0.82); /* زيادة التباين لتسهيل القراءة على الموبايل */
+                background: rgba(0, 0, 0, 0.85); /* تغميق الخلفية سنة عشان الكلام يبان بوضوح فوق الصورة */
             }
 
-            /* تصغير النصوص عشان تليق مع حجم الموبايل */
-            .fire-icon { font-size: 24px; }
-            h1 { font-size: 26px; }
-            p.subtitle { font-size: 14px; margin-bottom: 20px; }
+            /* تصغير ذكي ومتناسق للنصوص (مش صغيرة أوي وفي المعقول) */
+            .fire-icon { font-size: 22px; }
+            h1 { font-size: 25px; margin-bottom: 5px; }
+            p.subtitle { font-size: 13px; margin-bottom: 18px; }
             
-            .categories { margin-bottom: 20px; gap: 6px; }
-            .cat-item { font-size: 12px; padding: 5px 10px; }
+            .categories { margin-bottom: 18px; gap: 5px; }
+            .cat-item { font-size: 11px; padding: 4px 8px; }
             
-            .btn-order { font-size: 16px; padding: 10px 30px; }
+            .btn-order { font-size: 15px; padding: 9px 25px; }
             
-            .footer-info { margin-top: 20px; font-size: 11px; }
+            .footer-info { margin-top: 15px; font-size: 10.5px; }
         }
 
         /* 📟 للشاشات المتوسطة كـ التابلت */
         @media (min-width: 481px) and (max-width: 768px) {
             body {
-                background-size: 100% 100%;
+                background-size: contain;
                 background-attachment: scroll;
             }
             .container {
                 width: 75%;
-                padding: 35px 20px;
+                padding: 30px 20px;
             }
-            h1 { font-size: 32px; }
+            h1 { font-size: 30px; }
         }
     </style>
 </head>
