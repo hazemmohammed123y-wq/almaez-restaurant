@@ -26,32 +26,72 @@
 
     <script>
         const socket = io();
-        
-        // 1. استقبال كل الطلبات المحفوظة أول ما الصفحة تفتح أو يتعمل ريفرش
-        socket.on('load_saved_orders', (orders) => {
+        let localOrdersArray = []; // مصفوفة محلية لضمان عدم الاختفاء الفجائي
+
+        // دالة لعرض وإعادة بناء شاشة الطلبات بالكامل من المصفوفة
+        function refreshOrdersScreen() {
             document.getElementById('kitchen-orders').innerHTML = '';
             document.getElementById('past-orders-list').innerHTML = '';
             
-            orders.forEach(order => {
+            // ترتيب تصاعدي أو تنازلي حسب الرغبة، هنا نعرض الأحدث أولاً في الطلبات الحالية
+            localOrdersArray.forEach(order => {
                 if (order.status === 'pending') {
                     renderPendingOrder(order);
                 } else if (order.status === 'done') {
                     renderPastOrder(order);
                 }
             });
+        }
+
+        // محاولة جلب البيانات المخزنة محلياً فوراً كشاشة مؤقتة سريعة أثناء التحميل لقفل مشكلة الريفرش
+        const savedCache = localStorage.getItem('backup_kitchen_orders');
+        if (savedCache) {
+            localOrdersArray = JSON.parse(savedCache);
+            refreshOrdersScreen();
+        }
+
+        // 1. استقبال كل الطلبات القادمة من السيرفر والداتابيز وتحديث الشاشة والـ Cache
+        socket.on('load_saved_orders', (orders) => {
+            localOrdersArray = orders;
+            localStorage.setItem('backup_kitchen_orders', JSON.stringify(orders));
+            refreshOrdersScreen();
         });
 
-        // 2. استقبال طلب جديد لايف
+        // طلب جلب البيانات مجدداً فور استقرار اتصال السوكيت لضمان التحديث التلقائي
+        socket.on('connect', () => {
+            socket.emit('request_orders_refresh');
+        });
+
+        // 2. استقبال طلب جديد لايف وضمان حفظه محلياً وفي الشاشة
         socket.on('kitchen_receive', (order) => {
-            renderPendingOrder(order);
+            // للتأكد من عدم تكرار الطلب إذا جاء من أكثر من مصدر
+            if (!localOrdersArray.some(o => o._id === order._id)) {
+                localOrdersArray.push(order);
+                localStorage.setItem('backup_kitchen_orders', JSON.stringify(localOrdersArray));
+                renderPendingOrder(order);
+            }
+        });
+
+        // استقبال تحديثات الحالة من الأجهزة الأخرى لو مفتوح أكثر من شاشة للمطبخ
+        socket.on('order_status_updated_global', (data) => {
+            const orderIndex = localOrdersArray.findIndex(o => o._id === data.id);
+            if (orderIndex !== -1) {
+                localOrdersArray[orderIndex].status = data.status;
+                localStorage.setItem('backup_kitchen_orders', JSON.stringify(localOrdersArray));
+                refreshOrdersScreen();
+            }
         });
 
         // دالة لعرض الطلبات الحالية (في المطبخ)
         function renderPendingOrder(order) {
             const container = document.getElementById('kitchen-orders');
+            
+            // منع التكرار في واجهة المستخدم
+            if (document.querySelector(`[data-id="${order._id}"]`)) return;
+
             const div = document.createElement('div');
             div.className = 'order-card';
-            div.setAttribute('data-id', order._id); // حفظ الـ ID الخاص بالقاعدة في الكارد
+            div.setAttribute('data-id', order._id);
             
             const itemsHtml = order.items.map(i => `
                 <li><span class="qty-badge">${i.quantity}</span> ${i.name}</li>
@@ -88,8 +128,15 @@
 
         // تحويل الطلب لـ "تم التحضير" وإبلاغ السيرفر ليحدثه في قاعدة البيانات
         function moveToPast(orderId, element) {
-            // إرسال إشارة للسيرفر لتحديث الحالة في المونجو دي بي
+            // 1. إرسال إشارة للسيرفر فوراً
             socket.emit('update_order_status', { id: orderId, status: 'done' });
+
+            // 2. تحديث المصفوفة المحلية والـ Cache فوراً بدون انتظار رد السيرفر لسرعة الأداء لمالك المحل
+            const orderIndex = localOrdersArray.findIndex(o => o._id === orderId);
+            if (orderIndex !== -1) {
+                localOrdersArray[orderIndex].status = 'done';
+                localStorage.setItem('backup_kitchen_orders', JSON.stringify(localOrdersArray));
+            }
 
             const pastContainer = document.getElementById('past-orders-list');
             const pastDiv = document.createElement('div');
@@ -111,6 +158,21 @@
             pastContainer.prepend(pastDiv);
             element.remove();
         }
+
+        // محاولة جلب احتياطية من خلال مسار الـ API العادي إذا طال وقت اتصال السوكيت
+        setTimeout(async () => {
+            if (localOrdersArray.length === 0) {
+                try {
+                    const res = await fetch('/api/orders');
+                    const backupOrders = await res.json();
+                    if (backupOrders && backupOrders.length > 0) {
+                        localOrdersArray = backupOrders;
+                        localStorage.setItem('backup_kitchen_orders', JSON.stringify(backupOrders));
+                        refreshOrdersScreen();
+                    }
+                } catch(e) { console.log("خطأ في جلب بيانات الـ API الاحتياطية"); }
+            }
+        }, 2000);
     </script>
 </body>
 </html>
