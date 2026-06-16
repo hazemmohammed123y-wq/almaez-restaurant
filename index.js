@@ -12,8 +12,8 @@ const io = new Server(server, {
     }
 });
 
-// الرابط المتغير: جربنا هنا نستخدم الرابط اللي إنت بعته
-const mongoURI = "mongodb://mongo:jQMFmpjiXvMqKZeFosChJSDzcIxZOyZh@mongodb.railway.internal:27017";
+// التعديل هنا: السيرفر هيقرأ الرابط المتغير أوتوماتيك من ريلواي بدون مشاكل
+const mongoURI = process.env.MONGO_URL;
 
 mongoose.connect(mongoURI, {
     serverSelectionTimeoutMS: 5000 // لو معرفش يتصل في خلال 5 ثواني ميعلقش السيرفر
