@@ -14,11 +14,20 @@
         .btn-done { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 15px; }
         #past-orders-container { border-top: 2px solid #333; margin-top: 40px; padding-top: 20px; }
         
-        /* تنسيق قسم الفلترة والتقويم الجديد */
-        .past-header-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .date-picker-box { background: #262626; padding: 8px 15px; border-radius: 8px; border: 1px solid #333; display: flex; align-items: center; gap: 10px; }
-        .date-picker-box label { font-size: 0.95em; color: #e67e22; font-weight: bold; }
-        .date-picker-box input[type="date"] { background: #1a1a1a; color: white; border: 1px solid #e67e22; padding: 6px 10px; border-radius: 5px; font-size: 14px; cursor: pointer; outline: none; font-family: sans-serif; }
+        /* التنسيق الجديد لقائمة الشهور والأيام الذكية */
+        .past-header-wrapper { background: #262626; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        .past-header-wrapper h2 { margin-top: 0; color: #27ae60; }
+        .selectors-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        .selector-box { display: flex; align-items: center; gap: 8px; }
+        .selector-box label { font-size: 0.95em; color: #e67e22; font-weight: bold; }
+        .selector-box select { background: #1a1a1a; color: white; border: 1px solid #e67e22; padding: 8px 12px; border-radius: 5px; font-size: 14px; cursor: pointer; outline: none; }
+        
+        /* حاوية أزرار الأيام */
+        .days-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #444; }
+        .day-btn { background: #333; color: white; border: 1px solid #555; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .day-btn:hover { background: #e67e22; border-color: #e67e22; }
+        .day-btn.active { background: #27ae60; border-color: #27ae60; color: white; box-shadow: 0 0 8px rgba(39, 174, 96, 0.5); }
+        .no-orders-msg { color: #e74c3c; font-style: italic; margin-top: 15px; padding: 10px; display: block; }
     </style>
 </head>
 <body>
@@ -28,26 +37,107 @@
     <div id="past-orders-container">
         <div class="past-header-wrapper">
             <h2>المعاملات السابقة ✅</h2>
-            <div class="date-picker-box">
-                <label for="order-date-filter">تاريخ المعاملات:</label>
-                <input type="date" id="order-date-filter" onchange="filterPastOrdersByDate()">
+            
+            <div class="selectors-row">
+                <div class="selector-box">
+                    <label for="year-select">السنة:</label>
+                    <select id="year-select" onchange="generateDaysMenu()"></select>
+                </div>
+                
+                <div class="selector-box">
+                    <label for="month-select">الشهر:</label>
+                    <select id="month-select" onchange="generateDaysMenu()">
+                        <option value="1">يناير (1)</option>
+                        <option value="2">فبراير (2)</option>
+                        <option value="3">مارس (3)</option>
+                        <option value="4">أبريل (4)</option>
+                        <option value="5">مايو (5)</option>
+                        <option value="6">يونيو (6)</option>
+                        <option value="7">يوليو (7)</option>
+                        <option value="8">أغسطس (8)</option>
+                        <option value="9">سبتمبر (9)</option>
+                        <option value="10">أكتوبر (10)</option>
+                        <option value="11">نوفمبر (11)</option>
+                        <option value="12">ديسمبر (12)</option>
+                    </select>
+                </div>
             </div>
+
+            <div style="font-size: 0.9em; color: #aaa; margin-top: 10px;">اختر اليوم لعرض طلباته:</div>
+            <div class="days-container" id="days-buttons-list"></div>
         </div>
+        
         <div id="past-orders-list"></div>
     </div>
 
     <script>
         const socket = io();
         let localOrdersArray = []; // مصفوفة محلية لضمان عدم الاختفاء الفجائي
+        let selectedDayGlobal = null; // الاحتفاظ باليوم المختار حالياً
 
-        // تعيين تاريخ اليوم تلقائياً في خانة التقويم عند فتح الشاشة أول مرة
+        // إعداد الواجهة عند تحميل الصفحة وتعيين تاريخ اليوم تلقائياً
         window.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            document.getElementById('order-date-filter').value = `${year}-${month}-${day}`;
-        });
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+            selectedDayGlobal = today.getDate();
+
+            // تعبئة قائمة السنوات (السنة الحالية والسنوات السابقة)
+            const yearSelect = document.getElementById('year-select');
+            for (let i = currentYear; i >= currentYear - 2; i--) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = i;
+                yearSelect.appendChild(opt);
+            }
+
+            // ضبط الاختيارات على الشهر والسنة الحاليين تلقائياً
+            yearSelect.value = currentYear;
+            document.getElementById('month-select').value = currentMonth;
+
+            // توليد أزرار الأيام بناءً على الشهر والسنة الحاليين
+            generateDaysMenu();
+        </script>
+        
+        <script>
+        // دالة لتوليد أزرار أيام الشهر المختار تلقائياً
+        function generateDaysMenu() {
+            const year = parseInt(document.getElementById('year-select').value, 10);
+            const month = parseInt(document.getElementById('month-select').value, 10);
+            const daysContainer = document.getElementById('days-buttons-list');
+            daysContainer.innerHTML = '';
+
+            // معرفة عدد أيام الشهر المختار بدقة (بما في ذلك السنوات الكبيسة)
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            // إذا كان المستخدم يغير الشهر وكان اليوم القديم أكبر من أيام الشهر الجديد، نقوم بضبطه
+            if (selectedDayGlobal > daysInMonth) {
+                selectedDayGlobal = daysInMonth;
+            }
+
+            // إنشاء زر لكل يوم في الشهر
+            for (let day = 1; day <= daysInMonth; day++) {
+                const btn = document.createElement('button');
+                btn.className = 'day-btn';
+                if (day === selectedDayGlobal) {
+                    btn.className = 'day-btn active';
+                }
+                btn.textContent = day;
+                btn.onclick = function() {
+                    // إلغاء تفعيل الزر السابق وتفعيل الزر الحالي
+                    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedDayGlobal = day;
+                    
+                    // تشغيل الفلترة فوراً لعرض طلبات هذا اليوم المحدد
+                    filterPastOrdersByDate();
+                };
+                daysContainer.appendChild(btn);
+            }
+
+            // تشغيل الفلترة بعد توليد الأيام مباشرة
+            filterPastOrdersByDate();
+        }
 
         // دالة مساعدة لتحويل أرقام التاريخ الهندي/العربي لأرقام إنجليزية للمقارنة السليمة
         function convertArabicDigitsToEnglish(str) {
@@ -57,37 +147,28 @@
             });
         }
 
-        // دالة الفلترة الذكية بناءً على التاريخ المختار في التقويم
+        // دالة الفلترة الذكية بناءً على (السنة - الشهر - اليوم المختار من الأزرار)
         function filterPastOrdersByDate() {
-            const selectedDateInput = document.getElementById('order-date-filter').value; // الصيغة: YYYY-MM-DD
+            const selYear = parseInt(document.getElementById('year-select').value, 10);
+            const selMonth = parseInt(document.getElementById('month-select').value, 10);
+            const selDay = selectedDayGlobal;
+
             const pastOrdersList = document.getElementById('past-orders-list');
             pastOrdersList.innerHTML = '';
 
-            if (!selectedDateInput) {
-                // لو اتمسح التاريخ، اعرض كل الطلبات المنتهية المتوفرة
-                localOrdersArray.forEach(order => {
-                    if (order.status === 'done') renderPastOrder(order);
-                });
-                return;
-            }
+            let foundOrdersCount = 0;
 
-            // تقسيم التاريخ المختار من التقويم
-            const parts = selectedDateInput.split('-');
-            const selYear = parseInt(parts[0], 10);
-            const selMonth = parseInt(parts[1], 10);
-            const selDay = parseInt(parts[2], 10);
-
-            // فرز وعرض الطلبات السابقة المتوافقة مع يوم التقويم أو الشهر الحالي
+            // فرز وعرض الطلبات السابقة المتوافقة تماماً مع اليوم والشهر والسنة المحددة
             localOrdersArray.forEach(order => {
                 if (order.status !== 'done') return;
 
                 // تنظيف تاريخ الطلب المحفوظ وتحويل أرقامه
                 let cleanOrderDate = convertArabicDigitsToEnglish(order.date); 
                 
-                // استخراج التاريخ الفعلي قبل علامة الساعة (على فرض كتابة السيرفر للصيغة DD/MM/YYYY أو بالشرطات)
+                // استخراج التاريخ الفعلي قبل علامة الساعة
                 let datePart = cleanOrderDate.split(' - ')[0].trim(); 
 
-                // فصل اليوم والشهر والسنة من تاريخ الطلب
+                // فصل اليوم والشهر والسنة من تاريخ الطلب القادم من مونجو دي بي
                 let orderDay, orderMonth, orderYear;
                 if (datePart.includes('/')) {
                     const dParts = datePart.split('/');
@@ -96,7 +177,6 @@
                     orderYear = parseInt(dParts[2], 10);
                 } else if (datePart.includes('-')) {
                     const dParts = datePart.split('-');
-                    // التنبؤ بحسب الترتيب (لو السيرفر مسجلها سنة-شهر-يوم أو يوم-شهر-سنة)
                     if (dParts[0].length === 4) {
                         orderYear = parseInt(dParts[0], 10);
                         orderMonth = parseInt(dParts[1], 10);
@@ -108,13 +188,17 @@
                     }
                 }
 
-                // شرط الفرز: يعرض طلبات اليوم المختار بالتقويم، وأيضاً يضمن عرض بقية طلبات نفس الشهر الحالي لتسهيل الرجوع
-                if (orderYear === selYear && orderMonth === selMonth) {
-                    if (orderDay === selDay || orderDay <= selDay) {
-                        renderPastOrder(order);
-                    }
+                // شرط الفرز الدقيق: يطابق اليوم والشهر والسنة المسترجعة بالكامل
+                if (orderYear === selYear && orderMonth === selMonth && orderDay === selDay) {
+                    renderPastOrder(order);
+                    foundOrdersCount++;
                 }
             });
+
+            // رسالة تنبيهية في حال عدم وجود فواتير لهذا اليوم المحدد
+            if (foundOrdersCount === 0) {
+                pastOrdersList.innerHTML = `<span class="no-orders-msg">لا توجد معاملات سابقة مسجلة في هذا اليوم (${selDay}/${selMonth}/${selYear})</span>`;
+            }
         }
 
         // دالة لعرض وإعادة بناء شاشة الطلبات بالكامل من مصفوفة البيانات
@@ -128,7 +212,7 @@
                 }
             });
 
-            // 2. تشغيل فلترة المعاملات السابقة بناءً على التاريخ الافتراضي الحالي للتقويم
+            // 2. تشغيل الفرز للأيام والطلبات السابقة
             filterPastOrdersByDate();
         }
 
@@ -136,10 +220,9 @@
         const savedCache = localStorage.getItem('backup_kitchen_orders');
         if (savedCache) {
             localOrdersArray = JSON.parse(savedCache);
-            refreshOrdersScreen();
         }
 
-        // 1. استقبال كل الطلبات القادمة من السيرفر والداتابيز وتحديث الشاشة والـ Cache
+        // 1. استقبال كل الطلبات القادمة من السيرفر والداتابيز (MongoDB) وتحديث الشاشة والـ Cache
         socket.on('load_saved_orders', (orders) => {
             localOrdersArray = orders;
             localStorage.setItem('backup_kitchen_orders', JSON.stringify(orders));
@@ -214,7 +297,7 @@
                 <strong>رقم الهاتف:</strong> ${order.phone} <br>
                 <small>وقت الوصول: ${order.date}</small>
             `;
-            pastContainer.appendChild(pastDiv); // الترتيب تصاعدي أو تنازلي تحت التقويم
+            pastContainer.appendChild(pastDiv);
         }
 
         // تحويل الطلب لـ "تم التحضير" وإبلاغ السيرفر ليحدثه في قاعدة البيانات
@@ -227,7 +310,6 @@
                 localStorage.setItem('backup_kitchen_orders', JSON.stringify(localOrdersArray));
             }
 
-            // إعادة فلترة الشاشة طبقاً لتاريخ اليوم المختار لضمان النظافة البرمجية
             refreshOrdersScreen();
             element.remove();
         }
