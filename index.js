@@ -12,15 +12,15 @@ const io = new Server(server, {
     }
 });
 
-// رابط قاعدة البيانات الخاص بك
-const mongoURI = "mongodb://mongo:jQMFmpjiXvMqKZeFosChJSDzcIxZOyZh@monorail.proxy.rlwy.net:27017";
+// الرابط الجديد بتاعك بعد تعديله وإضافة اسم قاعدة البيانات وتأمين الرموز الخاصة في الباسورد
+const mongoURI = "mongodb://hazemmohammed123y_db_user:mmmmmlllp0%2B@cluster0.irafd3b.mongodb.net/almoez_restaurant?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoURI, {
-    serverSelectionTimeoutMS: 8000 // زيادة وقت الانتظار لضمان استقرار الاتصال على ريلواي
+    serverSelectionTimeoutMS: 8000 // وقت الانتظار لضمان استقرار الاتصال على ريلواي
 })
-.then(() => console.log('✅ تم الاتصال بنجاح بقاعدة بيانات MongoDB'))
+.then(() => console.log('✅ تم الاتصال بنجاح بقاعدة بيانات MongoDB Atlas يا بطل!'))
 .catch(err => {
-    console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err.message);
+    console.error('❌ خطأ في الاتصال بقاعدة البيانات الجديدة:', err.message);
 });
 
 const OrderSchema = new mongoose.Schema({
@@ -51,11 +51,11 @@ app.get('/menu.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'menu.html'));
 });
 
-// مسار API إضافي كخطة بديلة آمنة تضمن جلب البيانات حتى لو علق السوكيت
+// مسار API لجلب البيانات حتى لو علق السوكيت أو عند عمل ريفريش
 app.get('/api/orders', async (req, res) => {
     try {
         if (mongoose.connection.readyState === 1) {
-            const allOrders = await Order.find({});
+            const allOrders = await Order.find({}).sort({ _id: -1 }); // ترتيب من الأحدث للأقدم
             return res.json(allOrders);
         }
         res.json([]);
@@ -71,7 +71,7 @@ io.on('connection', async (socket) => {
     const sendSavedOrders = async () => {
         try {
             if (mongoose.connection.readyState === 1) {
-                const allOrders = await Order.find({});
+                const allOrders = await Order.find({}).sort({ _id: -1 });
                 socket.emit('load_saved_orders', allOrders);
             }
         } catch (err) {
@@ -95,24 +95,28 @@ io.on('connection', async (socket) => {
         const dateTimeString = now.toLocaleDateString('ar-EG') + ' - ' + now.toLocaleTimeString('ar-EG');
 
         let orderToSend = {
-            _id: new mongoose.Types.ObjectId().toString(), 
             name: orderData.name,
             phone: orderData.phone,
             address: orderData.address,
             payment: orderData.payment,
-            items: orderData.items,
+            items: orderData.items || [],
             status: 'pending',
             date: dateTimeString
         };
 
         if (mongoose.connection.readyState === 1) {
-            const newOrder = new Order(orderToSend);
             try {
+                const newOrder = new Order(orderToSend);
                 const savedOrder = await newOrder.save();
-                orderToSend = savedOrder;
+                orderToSend = savedOrder; // هنا بياخد الـ _id الحقيقي من مونجو
+                console.log('💾 تم حفظ الطلب بنجاح في الداتابيز');
             } catch (err) {
-                console.error('خطأ أثناء حفظ الطلب:', err);
+                console.error('خطأ أثناء حفظ الطلب في الداتابيز:', err);
+                // لو فشل الحفظ بنحط له id مؤقت عشان شاشة المطبخ ما تعطلش لايف
+                orderToSend._id = new mongoose.Types.ObjectId().toString();
             }
+        } else {
+            orderToSend._id = new mongoose.Types.ObjectId().toString();
         }
 
         // إرسال للمطبخ لايف
