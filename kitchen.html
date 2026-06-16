@@ -13,6 +13,12 @@
         .time-badge { color: #f39c12; font-weight: bold; font-size: 0.85em; display: block; margin-bottom: 5px; }
         .btn-done { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 15px; }
         #past-orders-container { border-top: 2px solid #333; margin-top: 40px; padding-top: 20px; }
+        
+        /* تنسيق قسم الفلترة والتقويم الجديد */
+        .past-header-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .date-picker-box { background: #262626; padding: 8px 15px; border-radius: 8px; border: 1px solid #333; display: flex; align-items: center; gap: 10px; }
+        .date-picker-box label { font-size: 0.95em; color: #e67e22; font-weight: bold; }
+        .date-picker-box input[type="date"] { background: #1a1a1a; color: white; border: 1px solid #e67e22; padding: 6px 10px; border-radius: 5px; font-size: 14px; cursor: pointer; outline: none; font-family: sans-serif; }
     </style>
 </head>
 <body>
@@ -20,7 +26,13 @@
     <div id="kitchen-orders"></div>
 
     <div id="past-orders-container">
-        <h2>المعاملات السابقة ✅</h2>
+        <div class="past-header-wrapper">
+            <h2>المعاملات السابقة ✅</h2>
+            <div class="date-picker-box">
+                <label for="order-date-filter">تاريخ المعاملات:</label>
+                <input type="date" id="order-date-filter" onchange="filterPastOrdersByDate()">
+            </div>
+        </div>
         <div id="past-orders-list"></div>
     </div>
 
@@ -28,19 +40,96 @@
         const socket = io();
         let localOrdersArray = []; // مصفوفة محلية لضمان عدم الاختفاء الفجائي
 
-        // دالة لعرض وإعادة بناء شاشة الطلبات بالكامل من المصفوفة
+        // تعيين تاريخ اليوم تلقائياً في خانة التقويم عند فتح الشاشة أول مرة
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('order-date-filter').value = `${year}-${month}-${day}`;
+        });
+
+        // دالة مساعدة لتحويل أرقام التاريخ الهندي/العربي لأرقام إنجليزية للمقارنة السليمة
+        function convertArabicDigitsToEnglish(str) {
+            if (!str) return '';
+            return str.replace(/[٠-٩]/g, function (d) {
+                return d.charCodeAt(0) - 1632;
+            });
+        }
+
+        // دالة الفلترة الذكية بناءً على التاريخ المختار في التقويم
+        function filterPastOrdersByDate() {
+            const selectedDateInput = document.getElementById('order-date-filter').value; // الصيغة: YYYY-MM-DD
+            const pastOrdersList = document.getElementById('past-orders-list');
+            pastOrdersList.innerHTML = '';
+
+            if (!selectedDateInput) {
+                // لو اتمسح التاريخ، اعرض كل الطلبات المنتهية المتوفرة
+                localOrdersArray.forEach(order => {
+                    if (order.status === 'done') renderPastOrder(order);
+                });
+                return;
+            }
+
+            // تقسيم التاريخ المختار من التقويم
+            const parts = selectedDateInput.split('-');
+            const selYear = parseInt(parts[0], 10);
+            const selMonth = parseInt(parts[1], 10);
+            const selDay = parseInt(parts[2], 10);
+
+            // فرز وعرض الطلبات السابقة المتوافقة مع يوم التقويم أو الشهر الحالي
+            localOrdersArray.forEach(order => {
+                if (order.status !== 'done') return;
+
+                // تنظيف تاريخ الطلب المحفوظ وتحويل أرقامه
+                let cleanOrderDate = convertArabicDigitsToEnglish(order.date); 
+                
+                // استخراج التاريخ الفعلي قبل علامة الساعة (على فرض كتابة السيرفر للصيغة DD/MM/YYYY أو بالشرطات)
+                let datePart = cleanOrderDate.split(' - ')[0].trim(); 
+
+                // فصل اليوم والشهر والسنة من تاريخ الطلب
+                let orderDay, orderMonth, orderYear;
+                if (datePart.includes('/')) {
+                    const dParts = datePart.split('/');
+                    orderDay = parseInt(dParts[0], 10);
+                    orderMonth = parseInt(dParts[1], 10);
+                    orderYear = parseInt(dParts[2], 10);
+                } else if (datePart.includes('-')) {
+                    const dParts = datePart.split('-');
+                    // التنبؤ بحسب الترتيب (لو السيرفر مسجلها سنة-شهر-يوم أو يوم-شهر-سنة)
+                    if (dParts[0].length === 4) {
+                        orderYear = parseInt(dParts[0], 10);
+                        orderMonth = parseInt(dParts[1], 10);
+                        orderDay = parseInt(dParts[2], 10);
+                    } else {
+                        orderDay = parseInt(dParts[0], 10);
+                        orderMonth = parseInt(dParts[1], 10);
+                        orderYear = parseInt(dParts[2], 10);
+                    }
+                }
+
+                // شرط الفرز: يعرض طلبات اليوم المختار بالتقويم، وأيضاً يضمن عرض بقية طلبات نفس الشهر الحالي لتسهيل الرجوع
+                if (orderYear === selYear && orderMonth === selMonth) {
+                    if (orderDay === selDay || orderDay <= selDay) {
+                        renderPastOrder(order);
+                    }
+                }
+            });
+        }
+
+        // دالة لعرض وإعادة بناء شاشة الطلبات بالكامل من مصفوفة البيانات
         function refreshOrdersScreen() {
             document.getElementById('kitchen-orders').innerHTML = '';
-            document.getElementById('past-orders-list').innerHTML = '';
             
-            // ترتيب تصاعدي أو تنازلي حسب الرغبة، هنا نعرض الأحدث أولاً في الطلبات الحالية
+            // 1. عرض الطلبات المعلقة أولاً (التي تحتاج لتحضير لايف)
             localOrdersArray.forEach(order => {
                 if (order.status === 'pending') {
                     renderPendingOrder(order);
-                } else if (order.status === 'done') {
-                    renderPastOrder(order);
                 }
             });
+
+            // 2. تشغيل فلترة المعاملات السابقة بناءً على التاريخ الافتراضي الحالي للتقويم
+            filterPastOrdersByDate();
         }
 
         // محاولة جلب البيانات المخزنة محلياً فوراً كشاشة مؤقتة سريعة أثناء التحميل لقفل مشكلة الريفرش
@@ -64,11 +153,14 @@
 
         // 2. استقبال طلب جديد لايف وضمان حفظه محلياً وفي الشاشة
         socket.on('kitchen_receive', (order) => {
-            // للتأكد من عدم تكرار الطلب إذا جاء من أكثر من مصدر
             if (!localOrdersArray.some(o => o._id === order._id)) {
                 localOrdersArray.push(order);
                 localStorage.setItem('backup_kitchen_orders', JSON.stringify(localOrdersArray));
-                renderPendingOrder(order);
+                if (order.status === 'pending') {
+                    renderPendingOrder(order);
+                } else if (order.status === 'done') {
+                    filterPastOrdersByDate();
+                }
             }
         });
 
@@ -85,8 +177,6 @@
         // دالة لعرض الطلبات الحالية (في المطبخ)
         function renderPendingOrder(order) {
             const container = document.getElementById('kitchen-orders');
-            
-            // منع التكرار في واجهة المستخدم
             if (document.querySelector(`[data-id="${order._id}"]`)) return;
 
             const div = document.createElement('div');
@@ -112,50 +202,33 @@
         // دالة لعرض الطلبات السابقة
         function renderPastOrder(order) {
             const pastContainer = document.getElementById('past-orders-list');
-            const pastDiv = document.createElement('div');
-            pastDiv.className = 'past-order-card';
             
+            // منع التكرار في المعاملات السابقة الفلترة
             const itemsList = order.items.map(i => `${i.quantity} ${i.name}`).join(' - ');
             
+            const pastDiv = document.createElement('div');
+            pastDiv.className = 'past-order-card';
             pastDiv.innerHTML = `
                 <strong>تم الانتهاء:</strong> طلب من: ${order.name} <br>
                 <strong>الطلبات:</strong> ${itemsList} <br>
                 <strong>رقم الهاتف:</strong> ${order.phone} <br>
                 <small>وقت الوصول: ${order.date}</small>
             `;
-            pastContainer.prepend(pastDiv);
+            pastContainer.appendChild(pastDiv); // الترتيب تصاعدي أو تنازلي تحت التقويم
         }
 
         // تحويل الطلب لـ "تم التحضير" وإبلاغ السيرفر ليحدثه في قاعدة البيانات
         function moveToPast(orderId, element) {
-            // 1. إرسال إشارة للسيرفر فوراً
             socket.emit('update_order_status', { id: orderId, status: 'done' });
 
-            // 2. تحديث المصفوفة المحلية والـ Cache فوراً بدون انتظار رد السيرفر لسرعة الأداء لمالك المحل
             const orderIndex = localOrdersArray.findIndex(o => o._id === orderId);
             if (orderIndex !== -1) {
                 localOrdersArray[orderIndex].status = 'done';
                 localStorage.setItem('backup_kitchen_orders', JSON.stringify(localOrdersArray));
             }
 
-            const pastContainer = document.getElementById('past-orders-list');
-            const pastDiv = document.createElement('div');
-            pastDiv.className = 'past-order-card';
-            
-            const orderTitle = element.querySelector('h3').innerText;
-            const phone = element.querySelector('.phone-number').innerText;
-            const itemsList = Array.from(element.querySelectorAll('li'))
-                                   .map(li => li.innerText)
-                                   .join(' - ');
-            
-            pastDiv.innerHTML = `
-                <strong>تم الانتهاء:</strong> ${orderTitle} <br>
-                <strong>الطلبات:</strong> ${itemsList} <br>
-                <strong>رقم الهاتف:</strong> ${phone} <br>
-                <small>وقت التحضير: ${new Date().toLocaleTimeString('ar-EG')}</small>
-            `;
-            
-            pastContainer.prepend(pastDiv);
+            // إعادة فلترة الشاشة طبقاً لتاريخ اليوم المختار لضمان النظافة البرمجية
+            refreshOrdersScreen();
             element.remove();
         }
 
