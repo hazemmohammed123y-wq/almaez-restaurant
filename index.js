@@ -4,7 +4,7 @@ const http = require('http');
 const path = require('path'); 
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-const mongoose = require('mongoose'); // استدعاء مكتبة قاعدة البيانات
+const mongoose = require('mongoose'); 
 
 const io = new Server(server, {
     cors: {
@@ -12,20 +12,25 @@ const io = new Server(server, {
     }
 });
 
-// الربط بقاعدة بيانات MongoDB على ريلواي باستخدام الرابط بتاعك
+// الرابط المتغير: جربنا هنا نستخدم الرابط اللي إنت بعته
 const mongoURI = "mongodb://mongo:jQMFmpjiXvMqKZeFosChJSDzcIxZOyZh@mongodb.railway.internal:27017";
-mongoose.connect(mongoURI)
-  .then(() => console.log('✅ تم الاتصال بنجاح بقاعدة بيانات MongoDB على ريلواي'))
-  .catch(err => console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err));
 
-// تصميم شكل (Schema) حفظ الطلب في قاعدة البيانات
+mongoose.connect(mongoURI, {
+    serverSelectionTimeoutMS: 5000 // لو معرفش يتصل في خلال 5 ثواني ميعلقش السيرفر
+})
+.then(() => console.log('✅ تم الاتصال بنجاح بقاعدة بيانات MongoDB'))
+.catch(err => {
+    console.error('❌❌ خطأ كبير في الاتصال بقاعدة البيانات:', err.message);
+    console.log('⚠️ السيرفر هيشتغل عادي دلوقتي بس البيانات مش هتحفظ لحد ما نحل رابط الداتابيز.');
+});
+
 const OrderSchema = new mongoose.Schema({
     name: String,
     phone: String,
     address: String,
     payment: String,
     items: Array,
-    status: { type: String, default: 'pending' }, // pending = في المطبخ، done = تم التحضير
+    status: { type: String, default: 'pending' }, 
     date: { type: String }
 });
 
@@ -43,27 +48,29 @@ app.get('/menu.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'menu.html'));
 });
 
-// الـ Sockets
 io.on('connection', async (socket) => {
     console.log('⚡ فيه جهاز جديد اتصل بالسيرفر:', socket.id);
 
-    // أول ما شاشة المطبخ تفتح، السيرفر بيبعتلها كل الطلبات المتخزنة علطول
+    // جلب الطلبات القديمة لو الداتابيز شغالة
     try {
-        const allOrders = await Order.find({});
-        socket.emit('load_saved_orders', allOrders);
+        if (mongoose.connection.readyState === 1) {
+            const allOrders = await Order.find({});
+            socket.emit('load_saved_orders', allOrders);
+        }
     } catch (err) {
         console.log('خطأ في جلب الطلبات القديمة:', err);
     }
 
-    // استقبال طلب جديد من الزبون
+    // استقبال طلب جديد
     socket.on('new_order', async (orderData) => {
         console.log('🍔 طلب جديد وصل للسيرفر:', orderData);
         
         const now = new Date();
         const dateTimeString = now.toLocaleDateString('ar-EG') + ' - ' + now.toLocaleTimeString('ar-EG');
 
-        // حفظ الطلب في قاعدة البيانات أول ما يوصل
-        const newOrder = new Order({
+        // تجهيز بيانات الطلب لتقديمه لايف حتى لو الداتابيز فيها مشكلة
+        let orderToSend = {
+            _id: new mongoose.Types.ObjectId().toString(), // كود مؤقت
             name: orderData.name,
             phone: orderData.phone,
             address: orderData.address,
@@ -71,24 +78,31 @@ io.on('connection', async (socket) => {
             items: orderData.items,
             status: 'pending',
             date: dateTimeString
-        });
+        };
 
-        try {
-            const savedOrder = await newOrder.save();
-            // بنبعت الطلب للمطبخ ومعاه الـ ID بتاعه من قاعدة البيانات عشان نعرف نعدله بعدين
-            io.emit('kitchen_receive', savedOrder);
-        } catch (err) {
-            console.error('خطأ أثناء حفظ الطلب:', err);
+        // لو الداتابيز متصلة، احفظ فيها
+        if (mongoose.connection.readyState === 1) {
+            const newOrder = new Order(orderToSend);
+            try {
+                const savedOrder = await newOrder.save();
+                orderToSend = savedOrder;
+            } catch (err) {
+                console.error('خطأ أثناء حفظ الطلب في الداتابيز:', err);
+            }
         }
+
+        // إرسال للمطبخ فوراً (لايف)
+        io.emit('kitchen_receive', orderToSend);
     });
 
-    // تحديث حالة الطلب لما المطبخ يدوس "تم التحضير"
     socket.on('update_order_status', async (data) => {
-        try {
-            await Order.findByIdAndUpdate(data.id, { status: data.status });
-            console.log(`📦 تم تحديث حالة الطلب ${data.id} إلى ${data.status}`);
-        } catch (err) {
-            console.error('خطأ في تحديث حالة الطلب:', err);
+        if (mongoose.connection.readyState === 1) {
+            try {
+                await Order.findByIdAndUpdate(data.id, { status: data.status });
+                console.log(`📦 تم تحديث حالة الطلب ${data.id} إلى ${data.status}`);
+            } catch (err) {
+                console.error('خطأ في تحديث حالة الطلب:', err);
+            }
         }
     });
 
