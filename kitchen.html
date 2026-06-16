@@ -27,32 +27,70 @@
     <script>
         const socket = io();
         
+        // 1. استقبال كل الطلبات المحفوظة أول ما الصفحة تفتح أو يتعمل ريفرش
+        socket.on('load_saved_orders', (orders) => {
+            document.getElementById('kitchen-orders').innerHTML = '';
+            document.getElementById('past-orders-list').innerHTML = '';
+            
+            orders.forEach(order => {
+                if (order.status === 'pending') {
+                    renderPendingOrder(order);
+                } else if (order.status === 'done') {
+                    renderPastOrder(order);
+                }
+            });
+        });
+
+        // 2. استقبال طلب جديد لايف
         socket.on('kitchen_receive', (order) => {
+            renderPendingOrder(order);
+        });
+
+        // دالة لعرض الطلبات الحالية (في المطبخ)
+        function renderPendingOrder(order) {
             const container = document.getElementById('kitchen-orders');
             const div = document.createElement('div');
             div.className = 'order-card';
-            
-            // استخراج الوقت والتاريخ لحظة الاستلام
-            const now = new Date();
-            const dateTimeString = now.toLocaleDateString('ar-EG') + ' - ' + now.toLocaleTimeString('ar-EG');
+            div.setAttribute('data-id', order._id); // حفظ الـ ID الخاص بالقاعدة في الكارد
             
             const itemsHtml = order.items.map(i => `
                 <li><span class="qty-badge">${i.quantity}</span> ${i.name}</li>
             `).join('');
 
             div.innerHTML = `
-                <span class="time-badge">تاريخ ووقت الوصول: ${dateTimeString}</span>
+                <span class="time-badge">تاريخ ووقت الوصول: ${order.date}</span>
                 <h3>طلب من: ${order.name}</h3>
                 <p>العنوان: ${order.address} | الهاتف: <span class="phone-number">${order.phone}</span></p>
                 <ul>${itemsHtml}</ul>
                 <div class="payment-badge">طريقة الدفع: ${order.payment || 'كاش عند الاستلام'}</div>
                 <br>
-                <button class="btn-done" onclick="moveToPast(this.parentElement)">تم التحضير ✅</button>
+                <button class="btn-done" onclick="moveToPast('${order._id}', this.parentElement)">تم التحضير ✅</button>
             `;
             container.prepend(div);
-        });
+        }
 
-        function moveToPast(element) {
+        // دالة لعرض الطلبات السابقة
+        function renderPastOrder(order) {
+            const pastContainer = document.getElementById('past-orders-list');
+            const pastDiv = document.createElement('div');
+            pastDiv.className = 'past-order-card';
+            
+            const itemsList = order.items.map(i => `${i.quantity} ${i.name}`).join(' - ');
+            
+            pastDiv.innerHTML = `
+                <strong>تم الانتهاء:</strong> طلب من: ${order.name} <br>
+                <strong>الطلبات:</strong> ${itemsList} <br>
+                <strong>رقم الهاتف:</strong> ${order.phone} <br>
+                <small>وقت الوصول: ${order.date}</small>
+            `;
+            pastContainer.prepend(pastDiv);
+        }
+
+        // تحويل الطلب لـ "تم التحضير" وإبلاغ السيرفر ليحدثه في قاعدة البيانات
+        function moveToPast(orderId, element) {
+            // إرسال إشارة للسيرفر لتحديث الحالة في المونجو دي بي
+            socket.emit('update_order_status', { id: orderId, status: 'done' });
+
             const pastContainer = document.getElementById('past-orders-list');
             const pastDiv = document.createElement('div');
             pastDiv.className = 'past-order-card';
