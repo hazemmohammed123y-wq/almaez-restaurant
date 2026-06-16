@@ -12,8 +12,8 @@ const io = new Server(server, {
     }
 });
 
-// التعديل هنا: السيرفر هيقرأ الرابط المتغير أوتوماتيك من ريلواي بدون مشاكل
-const mongoURI = process.env.MONGO_URL;
+// استخدمنا هنا الرابط المباشر الصحيح البديل عشان يتصل فوراً بدون الاعتماد على متغيرات ريلواي
+const mongoURI = "mongodb://mongo:jQMFmpjiXvMqKZeFosChJSDzcIxZOyZh@monorail.proxy.rlwy.net:27017";
 
 mongoose.connect(mongoURI, {
     serverSelectionTimeoutMS: 5000 // لو معرفش يتصل في خلال 5 ثواني ميعلقش السيرفر
